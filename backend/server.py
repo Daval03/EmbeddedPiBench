@@ -6,9 +6,9 @@ CORS(app)  # Permite peticiones desde el frontend
 
 # Variable para almacenar el último resultado
 current_result = {
-    'digits': 78,
-    'algorithm': '',
-    'timestamp': ''
+    'digits': 8,
+    'algorithm': 'xd',
+    'timestamp': '1'
 }
 
 @app.route('/api/pi-digits', methods=['POST'])
