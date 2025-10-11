@@ -1,7 +1,4 @@
-interface Algorithm {
-  id: string;
-  name: string;
-}
+import type { Algorithm } from '../types';
 
 interface ExecutionProps {
   algorithms: Algorithm[];
@@ -40,25 +37,43 @@ export default function Execution({ algorithms }: ExecutionProps) {
       <div className="bg-white rounded-xl p-6 shadow-lg">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Visualización de Datos</h3>
         <div className="space-y-4">
-          {algorithms.slice(0, 3).map((alg, idx) => (
-            <div key={alg.id}>
-              <div className="flex justify-between mb-1">
-                <span className="font-semibold">{alg.name}</span>
-                <span className="text-gray-600">Etiqueta</span>
-              </div>
-              <div className="h-8 bg-gray-200 rounded overflow-hidden">
-                <div 
-                  className={`h-full bg-gradient-to-r ${
-                    idx === 0 ? 'from-red-400 to-red-600' : 
-                    idx === 1 ? 'from-orange-400 to-orange-600' : 
-                    'from-green-400 to-green-600'
-                  }`}
-                  style={{width: `${30 + idx * 30}%`}}
-                ></div>
-              </div>
-            </div>
+          {algorithms.slice(0, 3).map((algorithm, index) => (
+            <AlgorithmProgress 
+              key={algorithm.id}
+              algorithm={algorithm}
+              index={index}
+            />
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Componente auxiliar para la barra de progreso
+interface AlgorithmProgressProps {
+  algorithm: Algorithm;
+  index: number;
+}
+
+function AlgorithmProgress({ algorithm, index }: AlgorithmProgressProps) {
+  const gradientClasses = [
+    'from-red-400 to-red-600',
+    'from-orange-400 to-orange-600', 
+    'from-green-400 to-green-600'
+  ];
+
+  return (
+    <div>
+      <div className="flex justify-between mb-1">
+        <span className="font-semibold">{algorithm.name}</span>
+        <span className="text-gray-600">Etiqueta</span>
+      </div>
+      <div className="h-8 bg-gray-200 rounded overflow-hidden">
+        <div 
+          className={`h-full bg-gradient-to-r ${gradientClasses[index]}`}
+          style={{width: `${30 + index * 30}%`}}
+        ></div>
       </div>
     </div>
   );

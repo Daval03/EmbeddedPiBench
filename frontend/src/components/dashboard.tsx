@@ -1,13 +1,6 @@
 import { Zap, TrendingUp, Cpu } from 'lucide-react';
-
-interface DashboardProps {
-  piDigits: string;
-  algorithms: Array<{
-    id: string;
-    name: string;
-    digits: number;
-  }>;
-}
+import type { DashboardProps } from '../types';
+import StatCard from './ui/StatCard';
 
 export default function Dashboard({ piDigits, algorithms }: DashboardProps) {
   return (
@@ -33,32 +26,30 @@ export default function Dashboard({ piDigits, algorithms }: DashboardProps) {
 
       {/* Tarjetas de Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-500">
-          <div className="flex items-center mb-3">
-            <Zap className="text-blue-500 mr-2" />
-            <h3 className="font-bold text-gray-800">Estadística 1</h3>
-          </div>
-          <p className="text-4xl font-bold text-gray-900">00</p>
-          <p className="text-sm text-gray-600 mt-1">Descripción</p>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-green-500">
-          <div className="flex items-center mb-3">
-            <TrendingUp className="text-green-500 mr-2" />
-            <h3 className="font-bold text-gray-800">Estadística 2</h3>
-          </div>
-          <p className="text-4xl font-bold text-gray-900">00</p>
-          <p className="text-sm text-gray-600 mt-1">Descripción</p>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-purple-500">
-          <div className="flex items-center mb-3">
-            <Cpu className="text-purple-500 mr-2" />
-            <h3 className="font-bold text-gray-800">Estadística 3</h3>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">Texto</p>
-          <p className="text-sm text-gray-600 mt-1">Descripción</p>
-        </div>
+        <StatCard
+          icon={Zap}
+          title="Estadística 1"
+          value="00"
+          description="Descripción"
+          borderColor="border-blue-500"
+          iconColor="text-blue-500"
+        />
+        <StatCard
+          icon={TrendingUp}
+          title="Estadística 2"
+          value="00"
+          description="Descripción"
+          borderColor="border-green-500"
+          iconColor="text-green-500"
+        />
+        <StatCard
+          icon={Cpu}
+          title="Estadística 3"
+          value="Texto"
+          description="Descripción"
+          borderColor="border-purple-500"
+          iconColor="text-purple-500"
+        />
       </div>
 
       {/* Gráfico Comparativo */}
