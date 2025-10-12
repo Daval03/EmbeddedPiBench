@@ -12,9 +12,12 @@ double monte_carlo(long long iterations);
 double buffon(long long needles);
 
 //Inf series
-double leibniz(long long terms);
-double nilakantha(long long terms);
-double euler(long long terms);
+long double leibniz(long long terms);
+long double nilakantha(long long terms);
+long double euler(long long terms);
+long double euler_kahan(long long terms);
+long double ramanujan_fast(long long terms);
+long double chudnovsky_fast(long long terms);
 
 //Numerical methods
 double gauss_legendre(int iterations);
