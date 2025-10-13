@@ -91,7 +91,11 @@ void printNum(CalculatePi func, const char* name) {
 
 int main() {
 
-    printNum(borwein, "borwein");
+    printNum(pi_coprimes, "pi_coprimes");
+
+    int a=5;
+    int b=1;
+    int c=  ++a + b++ ;
 
     return 0;
 }

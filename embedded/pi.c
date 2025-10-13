@@ -3,6 +3,7 @@
 ///////////////// Probability /////////////////
 long double monte_carlo(long long iterations) {
     long long circle_points = 0.0L;
+    srandom(time(NULL));
     for(long long i = 0; i < iterations; i++) {
         double rand_x = (double)rand() / RAND_MAX;
         double rand_y = (double)rand() / RAND_MAX;
@@ -16,7 +17,40 @@ long double monte_carlo(long long iterations) {
     double pi = (4.0 * circle_points) / iterations;
     return pi;
 }
-double buffon(long long needles){return 0.0;}
+long double buffon(long long needles){
+    long long crosses = 0.0L;
+    
+    srandom(time(NULL));
+
+    for(long long i=0; i < needles; ++i){
+        long double center = (long double)rand() / RAND_MAX * 0.5L;
+        long double angle = (long double)rand() / RAND_MAX * (M_PI/2.0L);
+        if(center <= 0.5L * sin(angle)){
+            crosses++;
+        }   
+    }
+    if(crosses==0){
+        return 0.0L;
+    }
+    //pi = (2*L*N)/(d*C)
+    //L=d=1 pi= 2*N/C
+    long double pi = (2.0L * (long double)needles) / (long double)crosses;
+    return pi;
+}
+long long gcd(long long a, long long b) {
+    return b == 0 ? a : gcd(b, a % b);
+}
+
+long double pi_coprimes(long long pairs) {
+    long long coprimes = 0;
+    for(long long i = 0; i < pairs; i++) {
+        long long a = rand() % 1000000 + 1;
+        long long b = rand() % 1000000 + 1;
+        if(gcd(a, b) == 1) coprimes++;
+    }
+    double prob = (double)coprimes / pairs;
+    return sqrtl(6.0L / prob);
+}
 
 ///////////////// Inf series /////////////////
 long double leibniz(long long terms){

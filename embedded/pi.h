@@ -9,7 +9,9 @@
 
 //Probability
 long double monte_carlo(long long iterations);
-double buffon(long long needles);
+long double buffon(long long needles);
+long long gcd(long long a, long long b);
+long double pi_coprimes(long long pairs);
 
 //Inf series
 long double leibniz(long long terms);
