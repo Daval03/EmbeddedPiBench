@@ -8,7 +8,7 @@
 #include <math.h>
 
 //Probability
-double monte_carlo(long long iterations);
+long double monte_carlo(long long iterations);
 double buffon(long long needles);
 
 //Inf series
@@ -20,9 +20,9 @@ long double ramanujan_fast(long long terms);
 long double chudnovsky_fast(long long terms);
 
 //Numerical methods
-double gauss_legendre(int iterations);
-double bbp(int iterations);
-
+long double gauss_legendre(long long iterations);
+long double bbp(long long iterations);
+long double borwein(long long iterations);
 
 
 #endif 

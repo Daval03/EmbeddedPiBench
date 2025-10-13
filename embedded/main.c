@@ -90,6 +90,8 @@ void printNum(CalculatePi func, const char* name) {
 }
 
 int main() {
-    printNum(ramanujan_fast, "ramanujan_fast");
+
+    printNum(borwein, "borwein");
+
     return 0;
 }

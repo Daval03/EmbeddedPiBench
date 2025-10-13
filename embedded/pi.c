@@ -1,8 +1,8 @@
 #include "pi.h"
 
 ///////////////// Probability /////////////////
-double monte_carlo(long long iterations) {
-    long long circle_points = 0;
+long double monte_carlo(long long iterations) {
+    long long circle_points = 0.0L;
     for(long long i = 0; i < iterations; i++) {
         double rand_x = (double)rand() / RAND_MAX;
         double rand_y = (double)rand() / RAND_MAX;
@@ -20,9 +20,9 @@ double buffon(long long needles){return 0.0;}
 
 ///////////////// Inf series /////////////////
 long double leibniz(long long terms){
-    long double sum=0;
+    long double sum=0.0L;
     for(long long k=0; k < terms; ++k){
-        sum += pow(-1, k)/ (2*k+1); 
+        sum += powl(-1, k)/ (2*k+1); 
     }
     return 4*sum;
 }
@@ -31,12 +31,12 @@ long double euler(long long terms){
     for(long long k= 1; k < terms; ++k){
         sum += 1/(k*k); 
     }
-    return sqrt(6*sum);
+    return sqrtl(6*sum);
 }
 
 long double euler_kahan(long long terms) {
-    long double sum = 0.0;
-    long double compensation = 0.0;
+    long double sum = 0.0L;
+    long double compensation = 0.0L;
     
     for(long long k = 1; k <= terms; ++k) {
         long double term = 1.0 / (k * k);
@@ -46,12 +46,12 @@ long double euler_kahan(long long terms) {
         sum = t;
     }
     
-    return sqrt(6.0 * sum);
+    return sqrtl(6.0 * sum);
 }
 long double nilakantha(long long terms){
     long double sum=0;
     for(long long k=1; k < terms; ++k){
-        sum += pow(-1, k+1)/ ((2*k)*(2*k+1)*(2*k+2)); 
+        sum += powl(-1, k+1)/ ((2*k)*(2*k+1)*(2*k+2)); 
     }
     return 4*sum + 3;
 }
@@ -119,5 +119,55 @@ long double chudnovsky_fast(long long terms) {
 }
 
 ///////////////// Numerical methods /////////////////
-double gauss_legendre(int iterations){return 0.0;}
-double bbp(int iterations){return 0.0;}
+long double gauss_legendre(long long iterations) {
+    if (iterations > 10) {
+        iterations = 10;
+    }
+    long double a = 1.0L;
+    long double b = 1.0L / sqrtl(2.0L);
+    long double t = 0.25L;
+    long double p = 1.0L;
+    
+    for(long long i = 0; i < iterations; ++i) {
+        long double a_next = (a + b) / 2.0L;
+        long double b_next = sqrtl(a*b);
+        t = t - p * (a - a_next) * (a - a_next);  
+        p *= 2.0L;
+        a = a_next; 
+        b = b_next; 
+    }
+    long double sum=a+b;
+    return sum*sum/(4.0L * t);
+}
+long double bbp(long long iterations){
+    long double pi = 0.0L;
+    long double power_16 = 1.0L;
+    for(long long k = 0; k < iterations; ++k) {
+        long double k8 = 8.0L * k;
+        long double term = power_16 * (
+            4.0L / (k8 + 1.0L) -
+            2.0L / (k8 + 4.0L) -
+            1.0L / (k8 + 5.0L) -
+            1.0L / (k8 + 6.0L)
+        );
+        pi += term;
+        power_16 /= 16.0L;
+    }
+    return pi;
+}
+
+long double borwein(long long iterations){
+    if (iterations > 200) {
+        iterations = 200;
+    }
+    long double y = sqrtl(2.0L) - 1.0L;
+    long double a = 6.0L - 4*sqrtl(2.0L);
+
+    for(long long n = 0; n < iterations; ++n) {
+        long double y_next = (1 - powl(1 - powl(y, 4), 0.25L)) / (1 + powl(1 - powl(y, 4), 0.25L));
+        long double a_next = a*powl(1 + y_next, 4.0L) - powl(2.0L, 2*n+3) * y_next*(1+y_next+y_next*y_next);
+        y = y_next; 
+        a = a_next; 
+    }
+    return 1.0L/a;
+}
