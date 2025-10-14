@@ -7,6 +7,8 @@
 #include <limits.h>
 #include <math.h>
 
+typedef long double (*CalculatePi)(long long);
+
 //Probability
 long double monte_carlo(long long iterations);
 long double buffon(long long needles);
@@ -26,5 +28,7 @@ long double gauss_legendre(long long iterations);
 long double bbp(long long iterations);
 long double borwein(long long iterations);
 
+//utils
+void printCalculation(CalculatePi func, const char* name);
 
 #endif 
