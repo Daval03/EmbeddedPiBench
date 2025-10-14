@@ -4,6 +4,16 @@
 #define PORT 8080
 #define BUFFER_SIZE 4096
 #define IP_ADDRESS "192.168.18.40" 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <time.h>
+#include <math.h>
+#include "pi.h"
 
 // Struct for server configuration
 typedef struct {

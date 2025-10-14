@@ -9,6 +9,14 @@
 
 typedef long double (*CalculatePi)(long long);
 
+typedef struct {
+    long double pi_estimate;
+    long long iterations;
+    double cpu_time_used;
+    int correct_digits;
+    long double error;
+} PiResult;
+
 //Probability
 long double monte_carlo(long long iterations);
 long double buffon(long long needles);
@@ -30,5 +38,5 @@ long double borwein(long long iterations);
 
 //utils
 void printCalculation(CalculatePi func, const char* name);
-
+PiResult calibrateAndCalculate(CalculatePi func, const char* algorithm_name);
 #endif 

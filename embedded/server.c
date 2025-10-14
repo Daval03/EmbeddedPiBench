@@ -1,13 +1,4 @@
 #include "server.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <time.h>
-
 int server_init(Server *srv, int port) {
     srv->port = port;
     srv->running = 0;
@@ -69,6 +60,86 @@ void server_send_json(int client_fd, const char *json_body, int status_code) {
     send(client_fd, response, strlen(response), 0);
 }
 
+void server_handle_algorithm(int client_fd, const char *algorithm) {
+    char json_response[1024];
+    CalculatePi func = NULL;
+    
+    // Seleccionar la función del algoritmo
+    if (strcmp(algorithm, "monte_carlo") == 0) {
+        func = monte_carlo;
+    } 
+    else if (strcmp(algorithm, "leibniz") == 0) {
+        func = leibniz;
+    }
+    else if (strcmp(algorithm, "nilakantha") == 0) {
+        func = nilakantha;
+    }
+    else if (strcmp(algorithm, "coprimes") == 0) {
+        func = pi_coprimes;
+    }
+    else if (strcmp(algorithm, "buffon") == 0) {
+        func = buffon;
+    }
+    else if (strcmp(algorithm, "euler") == 0) {
+        func = euler;
+    }
+    else if (strcmp(algorithm, "euler_kahan") == 0) {
+        func = euler_kahan;
+    }
+    else if (strcmp(algorithm, "ramanujan") == 0) {
+        func = ramanujan_fast;
+    }
+    else if (strcmp(algorithm, "chudnovsky") == 0) {
+        func = chudnovsky_fast;
+    }
+    else if (strcmp(algorithm, "gauss_legendre") == 0) {
+        func = gauss_legendre;
+    }
+    else if (strcmp(algorithm, "bbp") == 0) {
+        func = bbp;
+    }
+    else if (strcmp(algorithm, "borwein") == 0) {
+        func = borwein;
+    }
+    else {
+        // Algoritmo no reconocido
+        char json_error[256];
+        snprintf(json_error, sizeof(json_error),
+            "{\"error\": \"Unknown algorithm\", \"algorithm\": \"%s\"}",
+            algorithm
+        );
+        server_send_json(client_fd, json_error, 400);
+        return;
+    }
+    
+    // Ejecutar calibración y cálculo usando la función de pi.c
+    PiResult result = calibrateAndCalculate(func, algorithm);
+    
+    // Construir respuesta JSON con todos los detalles
+    snprintf(json_response, sizeof(json_response),
+        "{"
+        "\"pi_estimate\": %.15Lf, "
+        "\"algorithm\": \"%s\", "
+        "\"iterations\": %lld, "
+        "\"time_seconds\": %.6f, "
+        "\"iterations_per_second\": %.0f, "
+        "\"correct_digits\": %d, "
+        "\"absolute_error\": %.2Le, "
+        "\"actual_pi\": %.15f"
+        "}",
+        result.pi_estimate,
+        algorithm,
+        result.iterations,
+        result.cpu_time_used,
+        result.iterations / result.cpu_time_used,
+        result.correct_digits,
+        result.error,
+        M_PI
+    );
+    
+    server_send_json(client_fd, json_response, 200);
+}
+
 void server_handle_client(int client_fd) {
     char buffer[BUFFER_SIZE] = {0};
     
@@ -98,7 +169,13 @@ void server_handle_client(int client_fd) {
             time(NULL)
         );
         server_send_json(client_fd, json_response, 200);
-    } else {
+    }
+    else if (strncmp(path, "/api/pi/", 8) == 0) {
+        // Extraer el nombre del algoritmo de la ruta
+        const char *algorithm = path + 8;  // Saltar "/api/pi/"
+        server_handle_algorithm(client_fd, algorithm);
+    }
+    else {
         char json_error[128];
         snprintf(json_error, sizeof(json_error),
             "{\"error\": \"Route not found\", \"path\": \"%s\"}",

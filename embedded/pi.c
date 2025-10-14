@@ -292,3 +292,88 @@ void printCalculation(CalculatePi func, const char* name) {
     }
     printf("========================\n");
 }
+
+
+PiResult calibrateAndCalculate(CalculatePi func, const char* algorithm_name) {
+    PiResult result = {0};
+    
+    long long iterations = 50;
+    clock_t start, end;
+    double cpu_time_used;
+    long double pi_estimate;
+    int calibration_attempts = 0;
+    const int MAX_CALIBRATION_ATTEMPTS = 50;
+    const long long MAX_ITERATIONS = 100000000LL; // 100 million
+    
+    printf("=== Calibrating %s algorithm ===\n", algorithm_name);
+    
+    // Calibration phase
+    while(calibration_attempts < MAX_CALIBRATION_ATTEMPTS) {
+        calibration_attempts++;
+        
+        start = clock();
+        pi_estimate = func(iterations);
+        end = clock();
+        cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+        
+        printf("Attempt %d: %lld iterations in %.6f seconds\n",
+               calibration_attempts, iterations, cpu_time_used);
+        
+        // Success condition: between 0.8 and 1.2 seconds
+        if(cpu_time_used >= 0.8 && cpu_time_used <= 1.2) {
+            break;
+        }
+        
+        // Exit if we reach maximum iterations
+        if(iterations >= MAX_ITERATIONS) {
+            printf("⚠️  Reached maximum iteration limit (%lld)\n", MAX_ITERATIONS);
+            break;
+        }
+        
+        // Adjust iterations based on time
+        if(cpu_time_used < 0.001) {
+            iterations *= 10;
+        } else if(cpu_time_used < 0.01) {
+            iterations *= 5;
+        } else if(cpu_time_used < 0.5) {
+            iterations *= 2;
+        } else if(cpu_time_used < 0.8) {
+            iterations = (long long)(iterations * (1.0 / cpu_time_used));
+        } else if(cpu_time_used > 1.2) {
+            iterations = (long long)(iterations * 0.8);
+        }
+        
+        // Ensure we don't exceed maximum
+        if(iterations > MAX_ITERATIONS) {
+            iterations = MAX_ITERATIONS;
+        }
+    }
+    
+    // Final measurement with calibrated iteration count
+    start = clock();
+    pi_estimate = func(iterations);
+    end = clock();
+    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+    
+    // Calculate error and correct digits
+    long double error = fabsl(M_PI - pi_estimate);
+    int correct_digits = 0;
+    
+    if(error > 0 && error < 1.0) {
+        correct_digits = (int)(-log10l(error));
+    } else if(error == 0) {
+        correct_digits = 15;
+    }
+    
+    // Store results
+    result.pi_estimate = pi_estimate;
+    result.iterations = iterations;
+    result.cpu_time_used = cpu_time_used;
+    result.correct_digits = correct_digits;
+    result.error = error;
+    
+    printf("Final: %.15Lf in %.6f seconds (%lld iterations)\n", 
+           pi_estimate, cpu_time_used, iterations);
+    
+    return result;
+}
