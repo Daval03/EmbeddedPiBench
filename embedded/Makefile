@@ -1,6 +1,6 @@
 
 # Compilador y flags
-CXX ?= g++
+CXX ?= gcc
 CXXFLAGS = -O2 
 
 # Nombre del ejecutable
@@ -10,11 +10,12 @@ BUILD_DIR = build
 # Archivos fuente (lista explícita para mejor control)
 SRCS = main.c pi.c server.c
 
+#
 # build all
 all: $(BUILD_DIR)/$(TARGET)
 
 $(BUILD_DIR)/$(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAGS) -o $@ $(SRCS)
+	$(CXX) -o $@ $(SRCS) $(CXXFLAGS)
 
 clean:
 	rm -f $(BUILD_DIR)/$(TARGET)

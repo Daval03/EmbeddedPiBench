@@ -100,6 +100,7 @@ void server_handle_algorithm(int client_fd, const char *algorithm) {
     }
     else if (strcmp(algorithm, "borwein") == 0) {
         func = borwein;
+
     }
     else {
         // Algoritmo no reconocido
@@ -113,19 +114,20 @@ void server_handle_algorithm(int client_fd, const char *algorithm) {
     }
     
     // Ejecutar calibración y cálculo usando la función de pi.c
-    PiResult result = calibrateAndCalculate(func, algorithm);
+    //
+    PiResult result = optimize_pi_precision(func, algorithm, 1.0);
     
     // Construir respuesta JSON con todos los detalles
     snprintf(json_response, sizeof(json_response),
         "{"
-        "\"pi_estimate\": %.15Lf, "
+        "\"pi_estimate\": %.19Lf, "
         "\"algorithm\": \"%s\", "
         "\"iterations\": %lld, "
         "\"time_seconds\": %.6f, "
         "\"iterations_per_second\": %.0f, "
         "\"correct_digits\": %d, "
         "\"absolute_error\": %.2Le, "
-        "\"actual_pi\": %.15f"
+        "\"actual_pi\": %.19f"
         "}",
         result.pi_estimate,
         algorithm,

@@ -29,4 +29,9 @@ int main() {
     return 0;
 }
 
-////printCalculation(pi_coprimes, "pi_coprimes");
+// #include "pi.h"
+
+// int main(){
+//     compare_algorithms();
+//     return 0;
+// }

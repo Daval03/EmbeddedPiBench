@@ -6,7 +6,8 @@
 #include <ctime>
 #include <limits.h>
 #include <math.h>
-
+#include <string.h>
+#include <float.h> 
 typedef long double (*CalculatePi)(long long);
 
 typedef struct {
@@ -37,6 +38,9 @@ long double bbp(long long iterations);
 long double borwein(long long iterations);
 
 //utils
-void printCalculation(CalculatePi func, const char* name);
-PiResult calibrateAndCalculate(CalculatePi func, const char* algorithm_name);
+void compare_algorithms();
+void test_algorithm(CalculatePi func, const char* name);
+PiResult optimize_pi_precision(CalculatePi func, const char* func_name, double time_limit);
+int count_correct_digits(long double estimate);
+
 #endif 
