@@ -1,4 +1,6 @@
 #include "server.h"
+
+// Initialize server on specified port
 int server_init(Server *srv, int port) {
     srv->port = port;
     srv->running = 0;
@@ -42,6 +44,7 @@ int server_init(Server *srv, int port) {
     return 0;
 }
 
+// Send JSON response to client
 void server_send_json(int client_fd, const char *json_body, int status_code) {
     char response[BUFFER_SIZE];
     const char *status_text = (status_code == 200) ? "OK" : "Error";
@@ -60,14 +63,15 @@ void server_send_json(int client_fd, const char *json_body, int status_code) {
     send(client_fd, response, strlen(response), 0);
 }
 
+// Handle algorithm calculation request
 void server_handle_algorithm(int client_fd, const char *algorithm) {
     char json_response[1024];
     CalculatePi func = NULL;
-    
-    // Seleccionar la función del algoritmo
+   
+    // Select algorithm function
     if (strcmp(algorithm, "monte_carlo") == 0) {
         func = monte_carlo;
-    } 
+    }
     else if (strcmp(algorithm, "leibniz") == 0) {
         func = leibniz;
     }
@@ -100,10 +104,9 @@ void server_handle_algorithm(int client_fd, const char *algorithm) {
     }
     else if (strcmp(algorithm, "borwein") == 0) {
         func = borwein;
-
     }
     else {
-        // Algoritmo no reconocido
+        // Unknown algorithm
         char json_error[256];
         snprintf(json_error, sizeof(json_error),
             "{\"error\": \"Unknown algorithm\", \"algorithm\": \"%s\"}",
@@ -112,36 +115,52 @@ void server_handle_algorithm(int client_fd, const char *algorithm) {
         server_send_json(client_fd, json_error, 400);
         return;
     }
-    
-    // Ejecutar calibración y cálculo usando la función de pi.c
-    //
+   
+    // Run calibration and calculation
     PiResult result = optimize_pi_precision(func, algorithm, 1.0);
+   
+    // Determine if we achieve perfect accuracy
+    const long double DECIMAL_THRESHOLD = 1e-33;
+    int perfect_decimal = (result.correct_digits >= 33);
+    int error_insignificant = (result.error < DECIMAL_THRESHOLD);
     
-    // Construir respuesta JSON con todos los detalles
+    // Ajust error
+    long double display_error = error_insignificant ? 0.0L : result.error;
+    long double display_rel_error = error_insignificant ? 0.0L : (result.error / PI_REFERENCE);
+    const char *error_note = error_insignificant ? "Error below decimal precision threshold (< 1e-33)" : NULL;
+    // Build JSON response
     snprintf(json_response, sizeof(json_response),
         "{"
-        "\"pi_estimate\": %.19Lf, "
+        "\"pi_estimate\": \"%.33Lf\", "
         "\"algorithm\": \"%s\", "
         "\"iterations\": %lld, "
-        "\"time_seconds\": %.6f, "
-        "\"iterations_per_second\": %.0f, "
+        "\"time_seconds\": %.6Lf, "
+        "\"iterations_per_second\": %.0Lf, "
         "\"correct_digits\": %d, "
+        "\"max_decimal_digits\": 33, "
+        "\"perfect_decimal_precision\": %s, "
         "\"absolute_error\": %.2Le, "
-        "\"actual_pi\": %.19f"
+        "\"relative_error\": %.2Le, "
+        "\"actual_pi\": \"%.33Lf\", "
+        "\"error_note\": %s "
         "}",
         result.pi_estimate,
         algorithm,
         result.iterations,
         result.cpu_time_used,
-        result.iterations / result.cpu_time_used,
+        (long double) result.iterations / result.cpu_time_used,
         result.correct_digits,
-        result.error,
-        M_PI
+        perfect_decimal ? "true" : "false",
+        display_error,
+        display_rel_error,
+        PI_REFERENCE,
+        error_note
     );
     
     server_send_json(client_fd, json_response, 200);
 }
 
+// Handle client connection
 void server_handle_client(int client_fd) {
     char buffer[BUFFER_SIZE] = {0};
     
@@ -161,7 +180,7 @@ void server_handle_client(int client_fd) {
     
     printf("Method: %s, Path: %s\n", method, path);
     
-    // Respond based on route
+    // Route requests
     if (strcmp(path, "/api/hello") == 0 || strcmp(path, "/") == 0) {
         char json_response[256];
         snprintf(json_response, sizeof(json_response),
@@ -173,8 +192,8 @@ void server_handle_client(int client_fd) {
         server_send_json(client_fd, json_response, 200);
     }
     else if (strncmp(path, "/api/pi/", 8) == 0) {
-        // Extraer el nombre del algoritmo de la ruta
-        const char *algorithm = path + 8;  // Saltar "/api/pi/"
+        // Extract algorithm name from path
+        const char *algorithm = path + 8;  // Skip "/api/pi/"
         server_handle_algorithm(client_fd, algorithm);
     }
     else {
@@ -189,6 +208,7 @@ void server_handle_client(int client_fd) {
     close(client_fd);
 }
 
+// Start server main loop
 void server_start(Server *srv) {
     srv->running = 1;
     printf("Server listening on http://%s:%d\n", IP_ADDRESS, srv->port);
@@ -215,6 +235,7 @@ void server_start(Server *srv) {
     }
 }
 
+// Cleanup server resources
 void server_cleanup(Server *srv) {
     if (srv->socket_fd != -1) {
         close(srv->socket_fd);

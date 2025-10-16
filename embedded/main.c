@@ -12,7 +12,6 @@ void signal_handler(int sig) {
     server_cleanup(&server);
     exit(0);
 }
-
 int main() {
     // Configure signal handler
     signal(SIGINT, signal_handler);
@@ -28,10 +27,3 @@ int main() {
     server_cleanup(&server);   
     return 0;
 }
-
-// #include "pi.h"
-
-// int main(){
-//     compare_algorithms();
-//     return 0;
-// }

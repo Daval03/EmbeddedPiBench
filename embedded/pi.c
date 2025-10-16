@@ -201,298 +201,192 @@ long double borwein(long long iterations){
 }
 
 //Utils
-// Función para contar dígitos correctos
+// Count correct digits in pi estimate
 int count_correct_digits(long double estimate) {
-    const long double PI_REFERENCE = 3.141592653589793238462643383279502884197L;
-    const int MAX_DIGITS = 18; // fuerza límite realista
-    if (isnan(estimate) || isinf(estimate)) return 0;
+
+    if (isnan(estimate) || isinf(estimate))
+        return 0;
 
     long double error = fabsl(estimate - PI_REFERENCE);
-    if (error < 1e-18L) error = 1e-18L; // evita 0.0 o valores ínfimos
+    if (error < LDBL_MIN) error = LDBL_MIN;  // evita underflow
 
-    int digits = (int)floorl(-log10l(error) + 1e-12L);
+    int digits = (int)floorl(-log10l(error));
+
     if (digits < 0) digits = 0;
-    if (digits > MAX_DIGITS) digits = MAX_DIGITS;
+    if (digits > MAX_PRECISION_DIGITS) digits = MAX_PRECISION_DIGITS;
+
     return digits;
 }
 
-
-// Probar una ejecución y verificar si es válida
-int test_execution(CalculatePi func, long long iterations, double time_limit,
-                   long double *result, double *time_used, int *digits) {
+// Test a pi calculation function with iteration count and time limit
+static ExecutionStatus test_execution(CalculatePi func, long long iterations, 
+                                      double time_limit, TestResult *test_result) {
     clock_t start = clock();
     long double estimate = func(iterations);
     clock_t end = clock();
     
-    *time_used = (double)(end - start) / CLOCKS_PER_SEC;
-    *result = estimate;
-    *digits = count_correct_digits(estimate);
+    test_result->time_used = (long double)(end - start) / CLOCKS_PER_SEC;
+    test_result->estimate = estimate;
+    test_result->iterations = iterations;
+    test_result->digits = count_correct_digits(estimate);
     
-    // Verificar validez
     if (isnan(estimate) || isinf(estimate)) {
-        return 0; // Inválido
+        return EXEC_INVALID;
     }
     
-    if (*time_used > time_limit) {
-        return -1; // Tiempo excedido
+    if (test_result->time_used > time_limit) {
+        return EXEC_TIMEOUT;
     }
     
-    return 1; // Válido
+    return EXEC_VALID;
 }
 
-// Función principal optimizada sin goto
-PiResult optimize_pi_precision(CalculatePi func, const char* func_name, double time_limit) {
-    const long double PI_REFERENCE = 3.141592653589793238462643383279502884197L;
-    
-    PiResult result = {0.0L, 0, 0.0, 0, 0.0L};
-    
-    long long best_iterations = 1;
-    long double best_estimate = 0.0L;
-    double best_time = 0.0;
-    int best_digits = 0;
-    
-    printf("Optimizando %s con límite de tiempo: %.2fs\n", func_name, time_limit);
-    printf("─────────────────────────────────────────────────────\n");
-    
-    // FASE 1: Encontrar rango seguro con valores pequeños
-    printf("Fase 1: Búsqueda inicial\n");
-    
+// Update best result with current result
+static void update_best_result(TestResult *best, const TestResult *current) {
+    best->iterations = current->iterations;
+    best->estimate = current->estimate;
+    best->time_used = current->time_used;
+    best->digits = current->digits;
+}
+
+// Check if maximum precision has been reached
+static int has_reached_max_precision(int digits) {
+    return digits >= MAX_PRECISION_DIGITS;
+}
+
+// PHASE IMPLEMENTATIONS
+
+// Phase 1: Test small fixed iteration values
+static int phase1_initial_search(CalculatePi func, double time_limit, TestResult *best) {
     long long test_values[] = {1, 2, 3, 4, 5, 10, 20, 50, 100, 200, 500, 1000};
-    int num_tests = 12;
-    long long last_valid = 1;
+    int num_tests = sizeof(test_values) / sizeof(test_values[0]);
     
     for (int i = 0; i < num_tests; i++) {
-        long double estimate;
-        double time_used;
-        int digits;
+        TestResult current;
+        ExecutionStatus status = test_execution(func, test_values[i], time_limit, &current);
         
-        int status = test_execution(func, test_values[i], time_limit, 
-                                   &estimate, &time_used, &digits);
-        
-        if (status == 0) {
-            printf("  ⚠ NaN en %lld iter - límite numérico alcanzado\n", test_values[i]);
+        if (status == EXEC_INVALID || status == EXEC_TIMEOUT) {
             break;
         }
         
-        if (status == -1) {
-            printf("  ⏱ Tiempo excedido en %lld iter\n", test_values[i]);
-            break;
-        }
+        update_best_result(best, &current);
         
-        // Actualizar mejor resultado
-        best_iterations = test_values[i];
-        best_estimate = estimate;
-        best_time = time_used;
-        best_digits = digits;
-        last_valid = test_values[i];
-        
-        printf("  ✓ %4lld iter: %d dígitos (%.6fs)\n", 
-               test_values[i], digits, time_used);
-        
-        // Si ya tenemos máxima precisión, terminar
-        if (digits >= 15) {
-            printf("  ⭐ Máxima precisión alcanzada\n");
-            result.pi_estimate = best_estimate;
-            result.iterations = best_iterations;
-            result.cpu_time_used = best_time;
-            result.error = fabsl(best_estimate - PI_REFERENCE);
-            result.correct_digits = best_digits;
-            return result;
+        if (has_reached_max_precision(current.digits)) {
+            return 1; // Early completion
         }
     }
     
-    // FASE 2: Búsqueda exponencial desde último valor válido
-    printf("\nFase 2: Búsqueda exponencial (desde %lld iter)\n", last_valid);
-    
-    long long current = last_valid * 2;
+    return 0;
+}
+
+// Calculate next iteration count based on time used
+static long long calculate_next_iteration(long long current, double time_used, double time_limit) {
+    if (time_used < time_limit * 0.1) {
+        return current * 5;
+    } else if (time_used < time_limit * 0.3) {
+        return current * 2;
+    } else if (time_used < time_limit * 0.6) {
+        return (long long)(current * 1.3);
+    }
+    return current;
+}
+
+// Phase 2: Exponential search for optimal iterations
+static int phase2_exponential_search(CalculatePi func, double time_limit, 
+                                     long long start_iter, TestResult *best) {
+    long long current = start_iter * 2;
     int no_improvement = 0;
     
-    while (no_improvement < 3) {
-        long double estimate;
-        double time_used;
-        int digits;
+    while (no_improvement < NO_IMPROVEMENT_THRESHOLD) {
+        TestResult current_result;
+        ExecutionStatus status = test_execution(func, current, time_limit, &current_result);
         
-        int status = test_execution(func, current, time_limit, 
-                                   &estimate, &time_used, &digits);
-        
-        if (status == 0) {
-            printf("  ⚠ NaN detectado - deteniendo\n");
+        if (status == EXEC_INVALID || status == EXEC_TIMEOUT) {
             break;
         }
         
-        if (status == -1) {
-            printf("  ⏱ Tiempo límite alcanzado\n");
-            break;
-        }
-        
-        // Verificar si hay mejora
-        if (digits >= best_digits && time_used <= time_limit) {
-            best_iterations = current;
-            best_estimate = estimate;
-            best_time = time_used;
-            best_digits = digits;
+        if (current_result.digits >= best->digits) {
+            update_best_result(best, &current_result);
             no_improvement = 0;
             
-            printf("  ✓ %7lld iter: %d dígitos (%.6fs)\n", 
-                   current, digits, time_used);
-            
-            if (digits >= 15) {
-                printf("  ⭐ Máxima precisión alcanzada\n");
-                break;
+            if (has_reached_max_precision(current_result.digits)) {
+                return 1;
             }
         } else {
             no_improvement++;
         }
         
-        // Ajustar siguiente iteración según tiempo usado
-        if (time_used < time_limit * 0.1) {
-            current *= 5;
-        } else if (time_used < time_limit * 0.3) {
-            current *= 2;
-        } else if (time_used < time_limit * 0.6) {
-            current = (long long)(current * 1.3);
-        } else {
-            // Muy cerca del límite
+        long long next = calculate_next_iteration(current, current_result.time_used, time_limit);
+        if (next == current || next > MAX_ITERATIONS) {
             break;
         }
-        
-        // Prevenir valores absurdos
-        if (current > 100000000LL) {
-            current = best_iterations * 2;
-            if (current > 100000000LL) break;
-        }
+        current = next;
     }
     
-    // FASE 3: Refinamiento fino
-    if (best_digits < 15 && best_time < time_limit * 0.7) {
-        printf("\nFase 3: Refinamiento fino\n");
-        
-        long long increment = best_iterations / 4;
-        if (increment < 1) increment = 1;
-        
-        for (int attempt = 0; attempt < 10; attempt++) {
-            long long try_iter = best_iterations + increment;
-            
-            long double estimate;
-            double time_used;
-            int digits;
-            
-            int status = test_execution(func, try_iter, time_limit, 
-                                       &estimate, &time_used, &digits);
-            
-            if (status != 1) {
-                // Si falla, reducir incremento
-                increment /= 2;
-                if (increment == 0) break;
-                continue;
-            }
-            
-            if (digits >= best_digits) {
-                best_iterations = try_iter;
-                best_estimate = estimate;
-                best_time = time_used;
-                best_digits = digits;
-                
-                printf("  ✓ %7lld iter: %d dígitos (%.6fs)\n", 
-                       try_iter, digits, time_used);
-                
-                if (digits >= 15) {
-                    printf("  ⭐ Máxima precisión alcanzada\n");
-                    break;
-                }
-                
-                // Continuar con mismo incremento si funciona
-            } else {
-                // Reducir incremento si no mejora
-                increment /= 2;
-                if (increment == 0) break;
-            }
-        }
+    return 0;
+}
+
+// Phase 3: Fine-tune around best iteration count
+static void phase3_fine_refinement(CalculatePi func, double time_limit, TestResult *best) {
+    if (best->digits >= MAX_PRECISION_DIGITS - 3 || best->time_used >= time_limit * 0.7) {
+        return;
     }
     
-    // Preparar resultado final
-    result.pi_estimate = best_estimate;
-    result.iterations = best_iterations;
-    result.cpu_time_used = best_time;
-    result.error = fabsl(best_estimate - PI_REFERENCE);
-    result.correct_digits = best_digits;
+    long long increment = best->iterations / 4;
+    if (increment < 1) increment = 1;
     
-    printf("\n╔═══════════════════════════════════════════════════╗\n");
-    printf("║              RESULTADO FINAL                      ║\n");
-    printf("╠═══════════════════════════════════════════════════╣\n");
-    printf("║ Algoritmo:    %-32s║\n", func_name);
-    printf("║ Iteraciones:  %-32lld║\n", result.iterations);
-    printf("║ Tiempo:       %.6f seg                      ║\n", result.cpu_time_used);
-    printf("║ Pi estimado:  %.15Lf        ║\n", result.pi_estimate);
-    printf("║ Error:        %.2Le                          ║\n", result.error);
-    printf("║ Dígitos OK:   %-32d║\n", result.correct_digits);
-    printf("╚═══════════════════════════════════════════════════╝\n\n");
-    
-    return result;
+    for (int attempt = 0; attempt < 10; attempt++) {
+        long long try_iter = best->iterations + increment;
+        
+        TestResult current;
+        ExecutionStatus status = test_execution(func, try_iter, time_limit, &current);
+        
+        if (status != EXEC_VALID) {
+            increment /= 2;
+            if (increment == 0) break;
+            continue;
+        }
+        
+        if (current.digits >= best->digits) {
+            update_best_result(best, &current);
+            
+            if (has_reached_max_precision(current.digits)) {
+                break;
+            }
+        } else {
+            increment /= 2;
+            if (increment == 0) break;
+        }
+    }
 }
 
-// Función para probar un algoritmo individual
-void test_algorithm(CalculatePi func, const char* name) {
-    optimize_pi_precision(func, name, 1.0);
-}
-
-// Comparar todos los algoritmos
-void compare_algorithms() {
-    printf("\n");
-    printf("╔══════════════════════════════════════════════════════════════════╗\n");
-    printf("║       COMPARACIÓN DE ALGORITMOS π - LÍMITE 1 SEGUNDO            ║\n");
-    printf("╚══════════════════════════════════════════════════════════════════╝\n\n");
+// Main optimization function - find best pi precision within time limit
+PiResult optimize_pi_precision(CalculatePi func, const char* func_name, double time_limit) {
     
-    typedef struct {
-        const char* name;
-        CalculatePi func;
-    } AlgorithmInfo;
     
-    AlgorithmInfo algorithms[] = {
-        {"Gauss-Legendre", gauss_legendre},
-        {"BBP", bbp},
-        {"Chudnovsky", chudnovsky_fast},
-        {"Ramanujan", ramanujan_fast},
-        {"Borwein", borwein},
-        {"Nilakantha", nilakantha},
-        {"Leibniz", leibniz},
-        {"Euler-Kahan", euler_kahan},
-        {"Monte Carlo", monte_carlo},
-        {"Buffon", buffon}
+    TestResult best = {1, 0.0L, 0.0L, 0};
+    
+    // Phase 1: Initial search with small values
+    int early_complete = phase1_initial_search(func, time_limit, &best);
+    
+    // Phase 2: Exponential search
+    if (!early_complete) {
+        early_complete = phase2_exponential_search(func, time_limit, best.iterations, &best);
+    }
+    
+    // Phase 3: Fine refinement
+    if (!early_complete) {
+        phase3_fine_refinement(func, time_limit, &best);
+    }
+    
+    // Convert to final result
+    PiResult result = {
+        .pi_estimate = best.estimate,
+        .iterations = best.iterations,
+        .cpu_time_used = best.time_used,
+        .correct_digits = best.digits,
+        .error = fabsl(best.estimate - PI_REFERENCE)
     };
-    
-    int num_algorithms = 10;
-    PiResult results[10];
-    
-    // Ejecutar todos los algoritmos
-    for (int i = 0; i < num_algorithms; i++) {
-        results[i] = optimize_pi_precision(algorithms[i].func, algorithms[i].name, 1.0);
-    }
-    
-    // Tabla resumen
-    printf("\n╔══════════════════╦═══════════╦══════════╦══════════╦═══════════╗\n");
-    printf("║ Algoritmo        ║ Iterac.   ║ Tiempo   ║ Dígitos  ║ Error     ║\n");
-    printf("╠══════════════════╬═══════════╬══════════╬══════════╬═══════════╣\n");
-    
-    for (int i = 0; i < num_algorithms; i++) {
-        printf("║ %-16s ║ %9lld ║ %8.5fs ║    %2d    ║ %.2Le ║\n",
-               algorithms[i].name,
-               results[i].iterations,
-               results[i].cpu_time_used,
-               results[i].correct_digits,
-               results[i].error);
-    }
-    
-    printf("╚══════════════════╩═══════════╩══════════╩══════════╩═══════════╝\n");
-    
-    // Encontrar el mejor
-    int best_idx = 0;
-    for (int i = 1; i < num_algorithms; i++) {
-        if (results[i].correct_digits > results[best_idx].correct_digits) {
-            best_idx = i;
-        }
-    }
-    
-    printf("\n🏆 Mejor algoritmo: %s con %d dígitos correctos\n", 
-           algorithms[best_idx].name, results[best_idx].correct_digits);
+    printf("\n Finish !!! \n");
+    return result;
 }
