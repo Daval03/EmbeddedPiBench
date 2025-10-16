@@ -1,7 +1,8 @@
-#include "pi.h"
-#include "server.h"
+#include "../embedded/pi/pi_optimization.h"
+#include "../embedded/server/server.h"
 #include <stdio.h>
 #include <signal.h>
+
 
 Server server;  // Global server instance
 

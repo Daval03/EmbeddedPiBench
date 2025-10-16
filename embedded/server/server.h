@@ -1,9 +1,6 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#define PORT 8080
-#define BUFFER_SIZE 4096
-#define IP_ADDRESS "192.168.18.40" 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,8 +10,9 @@
 #include <arpa/inet.h>
 #include <time.h>
 #include <math.h>
-#include "pi.h"
 
+#include "../pi/pi_optimization.h"
+#include "../constants.h"
 // Struct for server configuration
 typedef struct {
     int socket_fd;
