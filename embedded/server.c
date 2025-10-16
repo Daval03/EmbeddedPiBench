@@ -1,5 +1,68 @@
 #include "server.h"
 
+// Find algorithm function by name
+static CalculatePi find_algorithm(const char *algorithm) {
+    for (int i = 0; ALGORITHMS[i].name != NULL; i++) {
+        if (strcmp(algorithm, ALGORITHMS[i].name) == 0) {
+            return ALGORITHMS[i].func;
+        }
+    }
+    return NULL;
+}
+
+// Send error response for unknown algorithm
+static void send_algorithm_error(int client_fd, const char *algorithm) {
+    char json_error[256];
+    snprintf(json_error, sizeof(json_error),
+        "{\"error\": \"Unknown algorithm\", \"algorithm\": \"%s\"}",
+        algorithm
+    );
+    server_send_json(client_fd, json_error, 400);
+}
+
+// Build JSON response from PiResult
+static void build_result_json(char *buffer, size_t size, 
+                               const PiResult *result, 
+                               const char *algorithm) {
+    const long double DECIMAL_THRESHOLD = 1e-33;
+    int perfect_decimal = (result->correct_digits >= 33);
+    int error_insignificant = (result->error < DECIMAL_THRESHOLD);
+    
+    long double display_error = error_insignificant ? 0.0L : result->error;
+    long double display_rel_error = error_insignificant ? 0.0L : 
+        (result->error / PI_REFERENCE);
+    const char *error_note = error_insignificant ? 
+        "\"Error below decimal precision threshold (< 1e-33)\"" : "null";
+    
+    snprintf(buffer, size,
+        "{"
+        "\"pi_estimate\": \"%.33Lf\", "
+        "\"algorithm\": \"%s\", "
+        "\"iterations\": %lld, "
+        "\"time_seconds\": %.6Lf, "
+        "\"iterations_per_second\": %.0Lf, "
+        "\"correct_digits\": %d, "
+        "\"max_decimal_digits\": 33, "
+        "\"perfect_decimal_precision\": %s, "
+        "\"absolute_error\": %.2Le, "
+        "\"relative_error\": %.2Le, "
+        "\"actual_pi\": \"%.33Lf\", "
+        "\"error_note\": %s"
+        "}",
+        result->pi_estimate,
+        algorithm,
+        result->iterations,
+        result->cpu_time_used,
+        (long double) result->iterations / result->cpu_time_used,
+        result->correct_digits,
+        perfect_decimal ? "true" : "false",
+        display_error,
+        display_rel_error,
+        PI_REFERENCE,
+        error_note
+    );
+}
+
 // Initialize server on specified port
 int server_init(Server *srv, int port) {
     srv->port = port;
@@ -65,98 +128,19 @@ void server_send_json(int client_fd, const char *json_body, int status_code) {
 
 // Handle algorithm calculation request
 void server_handle_algorithm(int client_fd, const char *algorithm) {
-    char json_response[1024];
-    CalculatePi func = NULL;
-   
-    // Select algorithm function
-    if (strcmp(algorithm, "monte_carlo") == 0) {
-        func = monte_carlo;
-    }
-    else if (strcmp(algorithm, "leibniz") == 0) {
-        func = leibniz;
-    }
-    else if (strcmp(algorithm, "nilakantha") == 0) {
-        func = nilakantha;
-    }
-    else if (strcmp(algorithm, "coprimes") == 0) {
-        func = pi_coprimes;
-    }
-    else if (strcmp(algorithm, "buffon") == 0) {
-        func = buffon;
-    }
-    else if (strcmp(algorithm, "euler") == 0) {
-        func = euler;
-    }
-    else if (strcmp(algorithm, "euler_kahan") == 0) {
-        func = euler_kahan;
-    }
-    else if (strcmp(algorithm, "ramanujan") == 0) {
-        func = ramanujan_fast;
-    }
-    else if (strcmp(algorithm, "chudnovsky") == 0) {
-        func = chudnovsky_fast;
-    }
-    else if (strcmp(algorithm, "gauss_legendre") == 0) {
-        func = gauss_legendre;
-    }
-    else if (strcmp(algorithm, "bbp") == 0) {
-        func = bbp;
-    }
-    else if (strcmp(algorithm, "borwein") == 0) {
-        func = borwein;
-    }
-    else {
-        // Unknown algorithm
-        char json_error[256];
-        snprintf(json_error, sizeof(json_error),
-            "{\"error\": \"Unknown algorithm\", \"algorithm\": \"%s\"}",
-            algorithm
-        );
-        server_send_json(client_fd, json_error, 400);
+    // Find algorithm function
+    CalculatePi func = find_algorithm(algorithm);
+    if (func == NULL) {
+        send_algorithm_error(client_fd, algorithm);
         return;
     }
    
-    // Run calibration and calculation
+    // Run calculation
     PiResult result = optimize_pi_precision(func, algorithm, 1.0);
    
-    // Determine if we achieve perfect accuracy
-    const long double DECIMAL_THRESHOLD = 1e-33;
-    int perfect_decimal = (result.correct_digits >= 33);
-    int error_insignificant = (result.error < DECIMAL_THRESHOLD);
-    
-    // Ajust error
-    long double display_error = error_insignificant ? 0.0L : result.error;
-    long double display_rel_error = error_insignificant ? 0.0L : (result.error / PI_REFERENCE);
-    const char *error_note = error_insignificant ? "Error below decimal precision threshold (< 1e-33)" : NULL;
-    // Build JSON response
-    snprintf(json_response, sizeof(json_response),
-        "{"
-        "\"pi_estimate\": \"%.33Lf\", "
-        "\"algorithm\": \"%s\", "
-        "\"iterations\": %lld, "
-        "\"time_seconds\": %.6Lf, "
-        "\"iterations_per_second\": %.0Lf, "
-        "\"correct_digits\": %d, "
-        "\"max_decimal_digits\": 33, "
-        "\"perfect_decimal_precision\": %s, "
-        "\"absolute_error\": %.2Le, "
-        "\"relative_error\": %.2Le, "
-        "\"actual_pi\": \"%.33Lf\", "
-        "\"error_note\": %s "
-        "}",
-        result.pi_estimate,
-        algorithm,
-        result.iterations,
-        result.cpu_time_used,
-        (long double) result.iterations / result.cpu_time_used,
-        result.correct_digits,
-        perfect_decimal ? "true" : "false",
-        display_error,
-        display_rel_error,
-        PI_REFERENCE,
-        error_note
-    );
-    
+    // Build and send response
+    char json_response[1024];
+    build_result_json(json_response, sizeof(json_response), &result, algorithm);
     server_send_json(client_fd, json_response, 200);
 }
 

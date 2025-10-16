@@ -112,8 +112,6 @@ long double ramanujan_fast(long long terms) {
         long double term = factorial_ratio * inv_power_396 * (1103.0L + 26390.0L * k);
         sum += term;
         
-        // Optional: early termination if term becomes negligible
-        if (term < 1e-18L * sum) break;
     }
    
     sum *= constant_factor;
@@ -146,8 +144,6 @@ long double chudnovsky_fast(long long terms) {
         // Calculate current term
         long double term = sign * factorial_ratio * inv_power * (13591409.0L + 545140134.0L * k);
         sum += term;  
-        // Early termination if term is negligible
-        if (fabsl(term) < 1e-25L * fabsl(sum) && k > 0) break;
     }
     return C / sum;
 }
