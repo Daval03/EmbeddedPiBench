@@ -7,6 +7,10 @@
 #define NO_IMPROVEMENT_THRESHOLD 3
 #define PI_REFERENCE 3.14159265358979323846264338327950288419716939937510L
 
+///////////////// Fib /////////////////
+#define MAX_MEMO 1000
+
+
 ///////////////// Server /////////////////
 #define PORT 8080
 #define BUFFER_SIZE 4096

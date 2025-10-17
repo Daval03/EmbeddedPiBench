@@ -8,7 +8,7 @@ TARGET = pi
 BUILD_DIR = build
 
 # Archivos fuente (lista explícita para mejor control)
-SRCS = main.c pi/pi_calculations.c pi/pi_optimization.c server/server.c
+SRCS = main.c pi/pi_calculations.c pi/pi_optimization.c fib/fib_calculations.c server/server.c
 
 # build all
 all: $(BUILD_DIR)/$(TARGET)
