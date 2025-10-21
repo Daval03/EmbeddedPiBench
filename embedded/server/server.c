@@ -178,7 +178,14 @@ void server_handle_client(int client_fd) {
         const char *algorithm = path + 8;  // Skip "/api/pi/"
         server_handle_algorithm(client_fd, algorithm);
     }
-    else {
+    else if (strcmp(path, "/api/health") == 0) {
+        char json_response[128];
+        snprintf(json_response, sizeof(json_response),
+            "{\"status\": \"ok\", \"message\": \"Server 1 is running\", \"timestamp\": %ld}",
+            time(NULL)
+        );
+        server_send_json(client_fd, json_response, 200);
+    }else {
         char json_error[128];
         snprintf(json_error, sizeof(json_error),
             "{\"error\": \"Route not found\", \"path\": \"%s\"}",
