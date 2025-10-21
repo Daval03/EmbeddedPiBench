@@ -173,19 +173,25 @@ void server_handle_client(int client_fd) {
         );
         server_send_json(client_fd, json_response, 200);
     }
+    else if (strcmp(path, "/api/health") == 0) {
+        // 🆕 NUEVO ENDPOINT DE HEALTH CHECK
+        char json_response[256];
+        snprintf(json_response, sizeof(json_response),
+            "{\"status\": \"ok\", "
+            "\"service\": \"Pi Calculator C Server\", "
+            "\"timestamp\": %ld, "
+            "\"algorithms_available\": %d}",
+            time(NULL),
+            sizeof(ALGORITHMS) / sizeof(ALGORITHMS[0]) - 1
+        );
+        server_send_json(client_fd, json_response, 200);
+    }
     else if (strncmp(path, "/api/pi/", 8) == 0) {
         // Extract algorithm name from path
         const char *algorithm = path + 8;  // Skip "/api/pi/"
         server_handle_algorithm(client_fd, algorithm);
     }
-    else if (strcmp(path, "/api/health") == 0) {
-        char json_response[128];
-        snprintf(json_response, sizeof(json_response),
-            "{\"status\": \"ok\", \"message\": \"Server 1 is running\", \"timestamp\": %ld}",
-            time(NULL)
-        );
-        server_send_json(client_fd, json_response, 200);
-    }else {
+    else {
         char json_error[128];
         snprintf(json_error, sizeof(json_error),
             "{\"error\": \"Route not found\", \"path\": \"%s\"}",
