@@ -46,8 +46,7 @@ static void build_result_json(char *buffer, size_t size,
         "\"perfect_decimal_precision\": %s, "
         "\"absolute_error\": %.2Le, "
         "\"relative_error\": %.2Le, "
-        "\"actual_pi\": \"%.33Lf\", "
-        "\"error_note\": %s"
+        "\"actual_pi\": \"%.33Lf\" "
         "}",
         result->pi_estimate,
         algorithm,
@@ -58,8 +57,7 @@ static void build_result_json(char *buffer, size_t size,
         perfect_decimal ? "true" : "false",
         display_error,
         display_rel_error,
-        PI_REFERENCE,
-        error_note
+        PI_REFERENCE
     );
 }
 

@@ -42,6 +42,7 @@ static const AlgorithmEntry ALGORITHMS[] = {
     {NULL, NULL}  // Sentinel
 };
 
+
 // Initialize server
 int server_init(Server *srv, int port);
 
