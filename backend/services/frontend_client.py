@@ -34,17 +34,15 @@ class FrontEndClient:
             for estimation in estimations:
                 estimation_dict = {
                     "id": estimation[0],
-                    "pi_value": float(estimation[1]) if estimation[1] else None,
-                    "algorithm_name": estimation[2],
+                    "pi_estimate": float(estimation[1]) if estimation[1] else None,
+                    "algorithm": estimation[2], 
                     "iterations": estimation[3],
-                    "execution_time": estimation[4],
-                    "performance_score": estimation[5],
-                    "accuracy": estimation[6],
-                    "max_precision": estimation[7],
-                    "convergence_status": bool(estimation[8]),
+                    "time_seconds": estimation[4],  
+                    "iterations_per_second": estimation[5],  
+                    "correct_digits": estimation[6],  
+                    "perfect_decimal_precision": bool(estimation[8]),
                     "absolute_error": estimation[9],
-                    "relative_error": estimation[10],
-                    "timestamp": estimation[11]
+                    "relative_error": estimation[10]
                 }
                 combined_data["estimations"].append(estimation_dict)
             
