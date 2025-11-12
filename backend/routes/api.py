@@ -15,11 +15,14 @@ def health_check():
         'service': 'Flask Proxy Server'
     }), 200
 
-@api_bp.route('/init-db', methods=['GET'])
-def init_db():
-    return jsonify({
-        ""
-    }), 200
+@api_bp.route('/send-info', methods=['GET'])
+def send_info():
+    """Envía información combinada de estimaciones y algoritmos"""
+    client = current_app.frontend_client
+    data, status_code = client.get_combined_data(
+        timeout=current_app.config.get('FRONTEND_DATA_TIMEOUT', 30)
+    )
+    return jsonify(data), status_code
 
 @api_bp.route('/check-server-c', methods=['GET'])
 def check_server_c():

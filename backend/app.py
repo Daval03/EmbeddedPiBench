@@ -3,8 +3,9 @@ from flask import Flask
 from flask_cors import CORS
 from config import get_config
 from services.server_c_client import ServerCClient
+from services.frontend_client import FrontEndClient  # Add this import
 from routes.api import api_bp
-from utils.get_algorithm import *
+
 
 def setup_logging(app):
     """Configura el sistema de logging"""
@@ -51,6 +52,12 @@ def create_app(config_name='default'):
         default_timeout=app.config['SERVER_C_TIMEOUT']
     )
     
+    # Inicializar cliente del Frontend (Add this)
+    app.frontend_client = FrontEndClient(
+        base_url=app.config.get('FRONTEND_BASE', 'http://localhost:3000'),
+        default_timeout=app.config.get('FRONTEND_DATA_TIMEOUT', 30)
+    )
+    
     # Registrar blueprints
     app.register_blueprint(api_bp)
     
@@ -59,6 +66,8 @@ def create_app(config_name='default'):
     def cleanup(exception=None):
         if hasattr(app, 'server_c_client'):
             app.server_c_client.close()
+        if hasattr(app, 'frontend_client'):
+            app.frontend_client.close()
     
     app.logger.info("✅ Flask Proxy Server configurado correctamente")
     
