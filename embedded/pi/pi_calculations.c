@@ -37,21 +37,22 @@ long double buffon(long long needles){
     return pi;
 }
 
-long long gcd(long long a, long long b) {
-    return b == 0 ? a : gcd(b, a % b);
-}
-
 long double pi_coprimes(long long pairs) {
+    auto gcd = [](long long a, long long b) {
+        return b == 0 ? a : gcd(b, a % b);
+    };
+    
     long long coprimes = 0;
+    srand(time(NULL));
+    
     for(long long i = 0; i < pairs; i++) {
         long long a = rand() % 1000000 + 1;
         long long b = rand() % 1000000 + 1;
         if(gcd(a, b) == 1) coprimes++;
     }
-    double prob = (double)coprimes / pairs;
-    return sqrtl(6.0L / prob);
+    
+    return sqrtl(6.0L / ((long double)coprimes / pairs));
 }
-
 ///////////////// Infinite series /////////////////
 long double leibniz(long long terms){
     long double sum=0.0L;
