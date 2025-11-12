@@ -72,7 +72,7 @@ export default function App() {
     checkServers();
 
     // Luego repetir cada 30 segundos
-    const interval = setInterval(checkServers, 1000);
+    const interval = setInterval(checkServers, 30000);
 
     return () => clearInterval(interval);
   }, []);
