@@ -1,10 +1,10 @@
+import logging
 from flask import Flask
 from flask_cors import CORS
-import logging
 from config import get_config
 from services.server_c_client import ServerCClient
 from routes.api import api_bp
-
+from utils.get_algorithm import *
 
 def setup_logging(app):
     """Configura el sistema de logging"""
@@ -65,7 +65,7 @@ def create_app(config_name='default'):
     return app
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':    
     app = create_app()
     
     print("🚀 Flask Proxy Server iniciado")
@@ -75,5 +75,6 @@ if __name__ == '__main__':
     app.run(
         host='0.0.0.0',
         port=5000,
-        debug=app.config['DEBUG']
+        debug=app.config['DEBUG'],
+        use_reloader=False
     )

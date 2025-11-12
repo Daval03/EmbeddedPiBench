@@ -15,6 +15,11 @@ def health_check():
         'service': 'Flask Proxy Server'
     }), 200
 
+@api_bp.route('/init-db', methods=['GET'])
+def init_db():
+    return jsonify({
+        ""
+    }), 200
 
 @api_bp.route('/check-server-c', methods=['GET'])
 def check_server_c():

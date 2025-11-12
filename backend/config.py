@@ -22,6 +22,7 @@ class Config:
     # Rate limiting (opcional, para implementar después)
     RATE_LIMIT_ENABLED = os.getenv('RATE_LIMIT_ENABLED', 'False').lower() == 'true'
 
+    
 
 class DevelopmentConfig(Config):
     """Configuración para desarrollo"""
