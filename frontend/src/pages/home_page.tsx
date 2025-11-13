@@ -60,7 +60,7 @@ const PiHomepage = () => {
             <div className="text-7xl font-mono font-bold mb-2">
               {digits}
             </div>
-            <div className="text-slate-400">dígitos correctos en 1 segundo</div>
+            <div className="text-slate-400">dígitos correctos en menos de 1 segundo</div>
           </div>
 
           <div className="flex gap-2 justify-center mb-4">
