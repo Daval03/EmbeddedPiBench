@@ -92,3 +92,5 @@ def top_elements(num: int) -> Optional[List[Tuple]]:
         LIMIT ?;
     """
     return execute_query(query, (num,))
+
+print(top_elements(4))

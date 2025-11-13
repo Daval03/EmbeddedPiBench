@@ -1,6 +1,6 @@
 import requests
 import logging
-from utils.get_db import fetch_all_estimations
+from utils.get_db import *
 from utils.get_algorithm_url import extract_all_algorithm
 from typing import Dict, Tuple
 
@@ -12,6 +12,29 @@ class FrontEndClient:
         self.base_url = base_url.rstrip('/')
         self.default_timeout = default_timeout
         self.session = requests.Session()
+    
+    def get_top_four_fastest(self):
+        """Obtiene el top 4 algorithmos con sus tiempos de ejecusion"""
+        try:
+            estimations = top_elements(4)
+            combined_data = {
+                "status": "success",
+                "estimations": []
+            }
+            for estimation in estimations:
+                estimation_dict = {
+                    "algorithm": estimation[0],
+                    "time_seconds": estimation[1],
+                    "correct_digits": estimation[2]
+                }
+                combined_data["estimations"].append(estimation_dict)
+            
+            return combined_data, 200
+        except Exception as e:
+            logger.error(f"Error obteniendo datos combinados: {e}")
+            return {"error": str(e)}, 500
+  
+    
     
     def get_combined_data(self, timeout: int = None):
         """Obtiene datos combinados de estimaciones y algoritmos"""

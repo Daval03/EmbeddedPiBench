@@ -24,6 +24,13 @@ def send_info():
     )
     return jsonify(data), status_code
 
+@api_bp.route('/send-top-estimations', methods=['GET'])
+def send_top_4():
+    """Envía información del top 4 algorithmos"""
+    client = current_app.frontend_client
+    data, status_code = client.get_top_four_fastest()
+    return jsonify(data), status_code
+
 @api_bp.route('/check-server-c', methods=['GET'])
 def check_server_c():
     """Verifica si el servidor C está activo"""
@@ -33,24 +40,6 @@ def check_server_c():
     )
     return jsonify(data), status_code
 
-
-@api_bp.route('/pi/<algorithm>', methods=['GET'])
-def calculate_pi(algorithm):
-    """
-    Proxy para cálculos de Pi desde el servidor C
-    
-    Args:
-        algorithm: Nombre del algoritmo (leibniz, montecarlo, etc.)
-    """
-    # Validación básica
-    if not algorithm or len(algorithm) > 50:
-        return jsonify({
-            'error': 'Algoritmo inválido'
-        }), 400
-    
-    client = current_app.server_c_client
-    data, status_code = client.calculate_pi(algorithm)
-    return jsonify(data), status_code
 
 
 # Manejadores de errores

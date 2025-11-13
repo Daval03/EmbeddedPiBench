@@ -15,7 +15,6 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<PiHomepage />} />
             <Route path="/home" element={<PiHomepage />} />
-            {/* <Route path="/algorithms" element={<AlgorithmsPage />} /> */}
           </Routes>
         </div>
         <Footer companyName='Test' year={2024}/>

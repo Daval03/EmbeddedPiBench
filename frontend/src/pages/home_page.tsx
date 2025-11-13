@@ -1,40 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Zap, Target, Code } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { fetchAlgorithms } from '../services/fetchAlgorithms';
+
+interface Algorithm {
+  name: string;
+  digits: number;
+  time: number;
+  color: string;
+}
 
 const PiHomepage = () => {
   const [activeAlgo, setActiveAlgo] = useState(0);
   const [digits, setDigits] = useState(0);
   
-  const algorithms = [
-    { name: 'Chudnovsky', digits: 33, time: 0.000003, color: 'from-purple-500 to-pink-500' },
-    { name: 'Ramanujan', digits: 33, time: 0.000004, color: 'from-blue-500 to-cyan-500' },
-    { name: 'Gauss-Legendre', digits: 33, time: 0.000006, color: 'from-green-500 to-emerald-500' },
-    { name: 'BBP', digits: 33, time: 0.000107, color: 'from-orange-500 to-red-500' },
-  ];
+  const [algorithms, setAlgorithms] = useState<Algorithm[]>([{ name: 'Cargando...', digits: 0, time: 0, color: 'from-slate-500 to-slate-600' }]);
 
+  //const algorithms = [ { name: 'Chudnovsky', digits: 33, time: 0.000003, color: 'from-purple-500 to-pink-500' }, { name: 'Ramanujan', digits: 33, time: 0.000004, color: 'from-blue-500 to-cyan-500' }, { name: 'Gauss-Legendre', digits: 33, time: 0.000006, color: 'from-green-500 to-emerald-500' }, { name: 'BBP', digits: 33, time: 0.000107, color: 'from-orange-500 to-red-500' }, ];
+  
+  useEffect(() => {fetchAlgorithms().then(setAlgorithms).catch(console.error);}, []);
+  
   useEffect(() => {
+    if (algorithms.length === 0) return;
     const interval = setInterval(() => {
       setActiveAlgo((prev) => (prev + 1) % algorithms.length);
     }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(interval);}, [algorithms]);
 
-  useEffect(() => {
-    const targetDigits = algorithms[activeAlgo].digits;
-    let current = 0;
-    const increment = targetDigits / 30;
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= targetDigits) {
-        setDigits(targetDigits);
-        clearInterval(timer);
-      } else {
-        setDigits(Math.floor(current));
-      }
-    }, 30);
-    return () => clearInterval(timer);
-  }, [activeAlgo]);
+    useEffect(() => {
+        const currentAlgo = algorithms?.[activeAlgo];
+        if (!currentAlgo) return;
+
+        const targetDigits = currentAlgo.digits;
+        let current = 0;
+        const increment = targetDigits / 30;
+
+        const timer = setInterval(() => {
+        current += increment;
+        if (current >= targetDigits) {
+            setDigits(targetDigits);
+            clearInterval(timer);
+        } else {
+            setDigits(Math.floor(current));
+        }
+        }, 30);
+
+        return () => clearInterval(timer);
+    }, [activeAlgo, algorithms]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
