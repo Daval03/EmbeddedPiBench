@@ -1,35 +1,3 @@
-# import sqlite3
-# def fetch_all_estimations():
-#     try:
-#         sqliteConnection = sqlite3.connect('backend/db/pi_database.db')
-#         sql_query = """SELECT * FROM pi_estimations;"""
-#         cursor = sqliteConnection.cursor()
-#         cursor.execute(sql_query)
-#         return cursor.fetchall() 
-#     except sqlite3.Error as error:
-#         print("Failed to execute the above query", error)
-#         return None
-#     finally:
-#         if sqliteConnection:
-#             sqliteConnection.close()
-
-# def top_elements(num):
-#     try:
-#         sqliteConnection = sqlite3.connect('backend/db/pi_database.db')
-#         sql_query = """select algorithm, time_seconds, correct_digits from pi_estimations order by time_seconds asc limit ?;"""
-#         cursor = sqliteConnection.cursor()
-#         cursor.execute(sql_query, (num,))
-#         return cursor.fetchall() 
-#     except sqlite3.Error as error:
-#         print("Failed to execute the above query", error)
-#         return None
-#     finally:
-#         if sqliteConnection:
-#             sqliteConnection.close()
-
-# a = top_elements(4)
-# print(a)
-
 import sqlite3
 from contextlib import contextmanager
 from typing import List, Tuple, Optional
@@ -92,5 +60,3 @@ def top_elements(num: int) -> Optional[List[Tuple]]:
         LIMIT ?;
     """
     return execute_query(query, (num,))
-
-print(top_elements(4))

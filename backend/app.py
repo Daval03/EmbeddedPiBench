@@ -78,7 +78,6 @@ if __name__ == '__main__':
     app = create_app()
     
     print("🚀 Flask Proxy Server iniciado")
-    print(f"📍 Servidor C: {app.config['SERVER_C_BASE']}")
     print(f"🔧 Modo: {'DEBUG' if app.config['DEBUG'] else 'PRODUCTION'}")
     
     app.run(

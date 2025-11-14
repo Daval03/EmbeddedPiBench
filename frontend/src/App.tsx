@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './componets/header';
 import Footer from './componets/footer';
 import PiHomepage from './pages/home_page';
-//import AlgorithmsPage from './pages/algorithm_page';
+import AlgorithmsPage from './pages/algorithm_page';
 
 const App: React.FC = () => {
   return (
@@ -15,6 +15,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<PiHomepage />} />
             <Route path="/home" element={<PiHomepage />} />
+            <Route path="/algorithms" element={<AlgorithmsPage />} />
           </Routes>
         </div>
         <Footer companyName='Test' year={2024}/>

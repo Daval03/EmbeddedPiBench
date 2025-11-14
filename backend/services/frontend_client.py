@@ -65,7 +65,8 @@ class FrontEndClient:
                     "correct_digits": estimation[6],  
                     "perfect_decimal_precision": bool(estimation[8]),
                     "absolute_error": estimation[9],
-                    "relative_error": estimation[10]
+                    "relative_error": estimation[10],
+                    "type": estimation[12]
                 }
                 combined_data["estimations"].append(estimation_dict)
             

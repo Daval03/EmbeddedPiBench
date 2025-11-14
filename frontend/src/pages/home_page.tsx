@@ -16,8 +16,6 @@ const PiHomepage = () => {
   
   const [algorithms, setAlgorithms] = useState<Algorithm[]>([{ name: 'Cargando...', digits: 0, time: 0, color: 'from-slate-500 to-slate-600' }]);
 
-  //const algorithms = [ { name: 'Chudnovsky', digits: 33, time: 0.000003, color: 'from-purple-500 to-pink-500' }, { name: 'Ramanujan', digits: 33, time: 0.000004, color: 'from-blue-500 to-cyan-500' }, { name: 'Gauss-Legendre', digits: 33, time: 0.000006, color: 'from-green-500 to-emerald-500' }, { name: 'BBP', digits: 33, time: 0.000107, color: 'from-orange-500 to-red-500' }, ];
-  
   useEffect(() => {fetchAlgorithms().then(setAlgorithms).catch(console.error);}, []);
   
   useEffect(() => {
@@ -88,60 +86,42 @@ const PiHomepage = () => {
           </div>
         </div>
 
-        {/* Quick Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-slate-700">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                <Activity className="w-5 h-5 text-purple-400" />
-              </div>
-              <div className="text-slate-400 text-sm">Algoritmos</div>
-            </div>
-            <div className="text-3xl font-bold">12</div>
-            <div className="text-sm text-slate-500 mt-1">Métodos comparados</div>
-          </div>
-
-          <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-slate-700">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-green-400" />
-              </div>
-              <div className="text-slate-400 text-sm">Más Rápido</div>
-            </div>
-            <div className="text-3xl font-bold">3 μs</div>
-            <div className="text-sm text-slate-500 mt-1">Chudnovsky Fast</div>
-          </div>
-
-          <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-slate-700">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                <Target className="w-5 h-5 text-blue-400" />
-              </div>
-              <div className="text-slate-400 text-sm">Precisión Máxima</div>
-            </div>
-            <div className="text-3xl font-bold">33</div>
-            <div className="text-sm text-slate-500 mt-1">Dígitos correctos</div>
-          </div>
-        </div>
-
         {/* Algorithm Categories */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-6 border border-purple-500/20">
-            <h3 className="text-lg font-semibold mb-2">Métodos Probabilísticos</h3>
-            <p className="text-sm text-slate-400 mb-3">Monte Carlo, Buffon, Coprimes</p>
-            <div className="text-sm text-slate-500">3-4 dígitos | ~1s</div>
+            <Target className="w-8 h-8 text-purple-400 mb-3" />
+            <h3 className="text-lg font-semibold mb-2">¿Qué es π?</h3>
+            <p className="text-sm text-slate-400 mb-3">
+              La constante matemática que relaciona la circunferencia de un círculo con su diámetro. 
+              Es un número irracional y trascendente con infinitos dígitos no periódicos.
+            </p>
+            <div className="text-xs text-slate-500">
+              Aproximación: 3.14159265358979323846...
+            </div>
           </div>
 
           <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl p-6 border border-blue-500/20">
-            <h3 className="text-lg font-semibold mb-2">Series Infinitas</h3>
-            <p className="text-sm text-slate-400 mb-3">Leibniz, Euler, Nilakantha</p>
-            <div className="text-sm text-slate-500">6-18 dígitos | 0.3-1s</div>
+            <Zap className="w-8 h-8 text-blue-400 mb-3" />
+            <h3 className="text-lg font-semibold mb-2">Métodos de Cálculo</h3>
+            <p className="text-sm text-slate-400 mb-3">
+              Desde aproximaciones geométricas hasta series infinitas y algoritmos modernos. 
+              Cada método tiene diferente eficiencia y precisión.
+            </p>
+            <div className="text-xs text-slate-500">
+              Probabilísticos • Series • Algoritmos iterativos
+            </div>
           </div>
 
           <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl p-6 border border-green-500/20">
-            <h3 className="text-lg font-semibold mb-2">Algoritmos Modernos</h3>
-            <p className="text-sm text-slate-400 mb-3">Ramanujan, Chudnovsky, BBP</p>
-            <div className="text-sm text-slate-500">33 dígitos | &lt;1ms</div>
+            <Activity className="w-8 h-8 text-green-400 mb-3" />
+            <h3 className="text-lg font-semibold mb-2">Limitaciones Técnicas</h3>
+            <p className="text-sm text-slate-400 mb-3">
+              En este sistema (Raspberry Pi 4 con C/long double) la precisión máxima es de 33 dígitos. 
+              Los algoritmos modernos alcanzan este límite rápidamente.
+            </p>
+            <div className="text-xs text-slate-500">
+              Máx. 33 dígitos | Precisión de hardware
+            </div>
           </div>
         </div>
 
