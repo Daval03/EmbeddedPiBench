@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Zap, Target, Code } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { fetchAlgorithms } from '../services/fetchAlgorithms';
+import { fetchTopPerformers } from '../services/fetchAlgorithms';
 
 interface Algorithm {
   name: string;
@@ -16,7 +16,7 @@ const PiHomepage = () => {
   
   const [algorithms, setAlgorithms] = useState<Algorithm[]>([{ name: 'Cargando...', digits: 0, time: 0, color: 'from-slate-500 to-slate-600' }]);
 
-  useEffect(() => {fetchAlgorithms().then(setAlgorithms).catch(console.error);}, []);
+  useEffect(() => {fetchTopPerformers().then(setAlgorithms).catch(console.error);}, []);
   
   useEffect(() => {
     if (algorithms.length === 0) return;
@@ -87,43 +87,43 @@ const PiHomepage = () => {
         </div>
 
         {/* Algorithm Categories */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-6 border border-purple-500/20">
-            <Target className="w-8 h-8 text-purple-400 mb-3" />
-            <h3 className="text-lg font-semibold mb-2">¿Qué es π?</h3>
-            <p className="text-sm text-slate-400 mb-3">
-              La constante matemática que relaciona la circunferencia de un círculo con su diámetro. 
-              Es un número irracional y trascendente con infinitos dígitos no periódicos.
-            </p>
-            <div className="text-xs text-slate-500">
-              Aproximación: 3.14159265358979323846...
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl p-6 border border-blue-500/20">
-            <Zap className="w-8 h-8 text-blue-400 mb-3" />
-            <h3 className="text-lg font-semibold mb-2">Métodos de Cálculo</h3>
-            <p className="text-sm text-slate-400 mb-3">
-              Desde aproximaciones geométricas hasta series infinitas y algoritmos modernos. 
-              Cada método tiene diferente eficiencia y precisión.
-            </p>
-            <div className="text-xs text-slate-500">
-              Probabilísticos • Series • Algoritmos iterativos
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl p-6 border border-green-500/20">
-            <Activity className="w-8 h-8 text-green-400 mb-3" />
-            <h3 className="text-lg font-semibold mb-2">Limitaciones Técnicas</h3>
-            <p className="text-sm text-slate-400 mb-3">
-              En este sistema (Raspberry Pi 4 con C/long double) la precisión máxima es de 33 dígitos. 
-              Los algoritmos modernos alcanzan este límite rápidamente.
-            </p>
-            <div className="text-xs text-slate-500">
-              Máx. 33 dígitos | Precisión de hardware
-            </div>
+      <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-6 border border-purple-500/20">
+          <Target className="w-8 h-8 text-purple-400 mb-3" />
+          <h3 className="text-lg font-semibold mb-2">¿Qué es π?</h3>
+          <p className="text-sm text-slate-400 mb-3">
+            La constante matemática que relaciona la circunferencia de un círculo con su diámetro. 
+            Es un número irracional y trascendente con infinitos dígitos no periódicos.
+          </p>
+          <div className="text-xs text-slate-500">
+            Aproximación: 3.14159265358979323846...
           </div>
         </div>
+
+        <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl p-6 border border-blue-500/20">
+          <Zap className="w-8 h-8 text-blue-400 mb-3" />
+          <h3 className="text-lg font-semibold mb-2">Métodos de Cálculo</h3>
+          <p className="text-sm text-slate-400 mb-3">
+            Desde aproximaciones geométricas hasta series infinitas y algoritmos modernos. 
+            Cada método tiene diferente eficiencia y precisión.
+          </p>
+          <div className="text-xs text-slate-500">
+            Probabilísticos • Series • Algoritmos iterativos
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl p-6 border border-green-500/20">
+          <Activity className="w-8 h-8 text-green-400 mb-3" />
+          <h3 className="text-lg font-semibold mb-2">Limitaciones Técnicas</h3>
+          <p className="text-sm text-slate-400 mb-3">
+            En este sistema (Raspberry Pi 4 con C/long double) la precisión máxima es de 33 dígitos. 
+            Los algoritmos modernos alcanzan este límite rápidamente.
+          </p>
+          <div className="text-xs text-slate-500">
+            Máx. 33 dígitos | Precisión de hardware
+          </div>
+        </div>
+      </div>
 
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl p-8 border border-purple-500/30 text-center">

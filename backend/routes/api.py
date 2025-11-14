@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Blueprint para las rutas de la API
-api_bp = Blueprint('api', __name__, url_prefix='/api')
+api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 
 
 @api_bp.route('/health', methods=['GET'])
@@ -15,23 +15,28 @@ def health_check():
         'service': 'Flask Proxy Server'
     }), 200
 
-@api_bp.route('/send-info', methods=['GET'])
+@api_bp.route('/estimations', methods=['GET'])
 def send_info():
     """Envía información combinada de estimaciones y algoritmos"""
     client = current_app.frontend_client
-    data, status_code = client.get_combined_data(
-        timeout=current_app.config.get('FRONTEND_DATA_TIMEOUT', 30)
-    )
+    data, status_code = client.get_estimations()
     return jsonify(data), status_code
 
-@api_bp.route('/send-top-estimations', methods=['GET'])
+@api_bp.route('/algorithms', methods=['GET'])
+def send_description_data():
+    """ """
+    client = current_app.frontend_client
+    data, status_code = client.get_algorithms_info()
+    return jsonify(data), status_code
+
+@api_bp.route('/estimations/top', methods=['GET'])
 def send_top_4():
     """Envía información del top 4 algorithmos"""
     client = current_app.frontend_client
-    data, status_code = client.get_top_four_fastest()
+    data, status_code = client.get_top_performers(4)
     return jsonify(data), status_code
 
-@api_bp.route('/check-server-c', methods=['GET'])
+@api_bp.route('/servers/c/health', methods=['GET'])
 def check_server_c():
     """Verifica si el servidor C está activo"""
     client = current_app.server_c_client

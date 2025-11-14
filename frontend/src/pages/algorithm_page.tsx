@@ -1,32 +1,56 @@
 // src/App.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {AlgorithmCard, AlgorithmInfo} from '../componets/algorithm_card';
 import { Container, Row, Col } from 'react-bootstrap';
-
-const bbpAlgorithm: AlgorithmInfo = {
-    name: "BBP Algorithm",
-    description: "Bailey–Borwein–Plouffe formula for calculating π",
-    language: "c++",
-    code: "long double bbp(long long iterations){\n    long double pi = 0.0L;\n    long double power_16 = 1.0L;\n    for(long long k = 0; k < iterations; ++k) {\n        long double k8 = 8.0L * k;\n        long double term = power_16 * (\n            4.0L / (k8 + 1.0L) -\n            2.0L / (k8 + 4.0L) -\n            1.0L / (k8 + 5.0L) -\n            1.0L / (k8 + 6.0L)\n        );\n        pi += term;\n        power_16 /= 16.0L;\n    }\n    return pi;\n}"
-  };
-
+import { fetchAlgorithms } from '../services/algorithmService';
 
 const AlgorithmsPage: React.FC = () => {
+  const [algorithms, setAlgorithms] = useState<AlgorithmInfo[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAlgorithms = async () => {
+      const algoList = await fetchAlgorithms();
+      setAlgorithms(algoList);
+      setLoading(false);
+    };
+
+    loadAlgorithms();
+  }, []);
+
+  if (loading) {
     return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-        <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Comparación de 12 algoritmos ejecutándose en una Raspberry Pi 4. 
-            Desde métodos probabilísticos hasta series infinitas.
-        </p>
-        <Container className="my-4">
-            <Row>
-                <Col lg={6} className="mb-4">
-                    <AlgorithmCard algorithm={bbpAlgorithm} />
-                </Col>
-            </Row>
-        </Container>
-    </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center">
+        <div className="text-xl text-slate-400">Cargando algoritmos...</div>
+      </div>
     );
-}
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8">
+            Exploración de Algoritmos para Calcular π
+        </h1>
+
+        <p className="text-xl text-slate-400 max-w-2xl mx-auto text-center mb-8">
+        Evaluación comparativa de {algorithms.length} algoritmos ejecutados en una Raspberry Pi 4,
+        analizando eficiencia, velocidad y precisión.
+        </p>
+
+
+        <Container className="my-4">
+          <Row>
+            {algorithms.map((algorithm, index) => (
+              <Col lg={6} className="mb-4" key={algorithm.name}>
+                <AlgorithmCard algorithm={algorithm} />
+              </Col>
+            ))}
+          </Row>
+        </Container>
+      </div>
+    </div>
+  );
+};
 
 export default AlgorithmsPage;

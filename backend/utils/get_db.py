@@ -1,6 +1,7 @@
 import sqlite3
 from contextlib import contextmanager
 from typing import List, Tuple, Optional
+import json
 
 DB_PATH = 'backend/db/pi_database.db'
 
@@ -42,6 +43,10 @@ def fetch_all_estimations() -> Optional[List[Tuple]]:
     """Obtiene todas las estimaciones de pi."""
     query = "SELECT * FROM pi_estimations;"
     return execute_query(query)
+def fetch_all_type()-> Optional[List[Tuple]]:    
+    """name and type"""
+    query = "SELECT algorithm, type FROM pi_estimations;"
+    return execute_query(query)
 
 def top_elements(num: int) -> Optional[List[Tuple]]:
     """
@@ -60,3 +65,26 @@ def top_elements(num: int) -> Optional[List[Tuple]]:
         LIMIT ?;
     """
     return execute_query(query, (num,))
+
+
+
+def load_algorithms():
+    with open('backend/db/description.json', 'r') as f:
+        return json.load(f)
+
+def get_algorithm_description(algorithm_name):
+    algorithms = load_algorithms()
+    key = algorithm_name.lower()
+    
+    if key in algorithms:
+        return f"{algorithm_name.upper()}: {algorithms[key]}"
+    else:
+        available = ", ".join(algorithms.keys())
+        return f"Algorithm '{algorithm_name}' not found. Available: {available}"
+
+def get_all_algorithm_description(algorithm_list):
+    info = []
+    for algo in algorithm_list:
+        info.append(get_algorithm_description(algo))
+    return info
+

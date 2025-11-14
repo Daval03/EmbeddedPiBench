@@ -5,7 +5,8 @@ interface AlgorithmInfo {
   name: string;
   description?: string;
   code: string;
-  language?: string;
+  type: string;
+  
 }
 
 interface AlgorithmCardProps {
@@ -22,13 +23,9 @@ const AlgorithmCard: React.FC<AlgorithmCardProps> = ({
       <Card.Header className="bg-light">
         <div className="d-flex justify-content-between align-items-center">
           <Card.Title className="mb-0 h5">
-            {algorithm.name}
-          </Card.Title>
-          {algorithm.language && (
-            <Badge bg="secondary" className="text-uppercase">
-              {algorithm.language}
-            </Badge>
-          )}
+            {"Algorithm: "}{algorithm.name}{" - Type: "}{algorithm.type}
+          </Card.Title>  
+          <Badge bg="secondary" className="text-uppercase">{"c"}</Badge>
         </div>
         {algorithm.description && (
           <Card.Text className="text-muted mt-2 mb-0">
