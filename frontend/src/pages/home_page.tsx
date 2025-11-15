@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Zap, Target, Code } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { fetchTopPerformers } from '../services/fetchAlgorithms';
 
 interface Algorithm {
   name: string;
@@ -11,41 +10,8 @@ interface Algorithm {
 }
 
 const PiHomepage = () => {
-  const [activeAlgo, setActiveAlgo] = useState(0);
-  const [digits, setDigits] = useState(0);
+
   
-  const [algorithms, setAlgorithms] = useState<Algorithm[]>([{ name: 'Cargando...', digits: 0, time: 0, color: 'from-slate-500 to-slate-600' }]);
-
-  useEffect(() => {fetchTopPerformers().then(setAlgorithms).catch(console.error);}, []);
-  
-  useEffect(() => {
-    if (algorithms.length === 0) return;
-    const interval = setInterval(() => {
-      setActiveAlgo((prev) => (prev + 1) % algorithms.length);
-    }, 3000);
-    return () => clearInterval(interval);}, [algorithms]);
-
-    useEffect(() => {
-        const currentAlgo = algorithms?.[activeAlgo];
-        if (!currentAlgo) return;
-
-        const targetDigits = currentAlgo.digits;
-        let current = 0;
-        const increment = targetDigits / 30;
-
-        const timer = setInterval(() => {
-        current += increment;
-        if (current >= targetDigits) {
-            setDigits(targetDigits);
-            clearInterval(timer);
-        } else {
-            setDigits(Math.floor(current));
-        }
-        }, 30);
-
-        return () => clearInterval(timer);
-    }, [activeAlgo, algorithms]);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Hero Section */}
@@ -59,34 +25,7 @@ const PiHomepage = () => {
             Desde métodos probabilísticos hasta series infinitas.
           </p>
         </div>
-
-        {/* Main Stats */}
-        <div className="bg-slate-800/50 backdrop-blur rounded-2xl p-8 mb-8 border border-slate-700">
-          <div className="text-center mb-6">
-            <div className="text-sm text-slate-400 mb-2">Algoritmo Actual</div>
-            <div className={`text-3xl font-bold bg-gradient-to-r ${algorithms[activeAlgo].color} bg-clip-text text-transparent mb-4`}>
-              {algorithms[activeAlgo].name}
-            </div>
-            <div className="text-7xl font-mono font-bold mb-2">
-              {digits}
-            </div>
-            <div className="text-slate-400">dígitos correctos en menos de 1 segundo</div>
-          </div>
-
-          <div className="flex gap-2 justify-center mb-4">
-            {algorithms.map((algo, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActiveAlgo(idx)}
-                className={`h-2 rounded-full transition-all ${
-                  idx === activeAlgo ? 'w-8 bg-gradient-to-r ' + algo.color : 'w-2 bg-slate-600'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Algorithm Categories */}
+      {/* Algorithm Categories */}
       <div className="grid md:grid-cols-3 gap-6 mb-12">
         <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-6 border border-purple-500/20">
           <Target className="w-8 h-8 text-purple-400 mb-3" />
