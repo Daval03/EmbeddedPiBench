@@ -37,8 +37,6 @@ const AlgorithmsPage: React.FC = () => {
         Evaluación comparativa de {algorithms.length} algoritmos ejecutados en una Raspberry Pi 4,
         analizando eficiencia, velocidad y precisión.
         </p>
-
-
         <Container className="my-4">
           <Row>
             {algorithms.map((algorithm, index) => (

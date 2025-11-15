@@ -5,6 +5,7 @@ import Header from './componets/header';
 import Footer from './componets/footer';
 import PiHomepage from './pages/home_page';
 import AlgorithmsPage from './pages/algorithm_page';
+import PiAlgorithmsComparison from './pages/comparison_page';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
             <Route path="/" element={<PiHomepage />} />
             <Route path="/home" element={<PiHomepage />} />
             <Route path="/algorithms" element={<AlgorithmsPage />} />
+            <Route path="/compare" element={<PiAlgorithmsComparison />} />
           </Routes>
         </div>
         <Footer companyName='Test' year={2024}/>

@@ -2,8 +2,11 @@ import sqlite3
 from contextlib import contextmanager
 from typing import List, Tuple, Optional
 import json
+import os
 
-DB_PATH = 'backend/db/pi_database.db'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(BASE_DIR, 'db', 'pi_database.db')
+DESCRIPTION_PATH = os.path.join(BASE_DIR, 'db', 'description.json')
 
 @contextmanager
 def get_db_connection():
@@ -69,7 +72,7 @@ def top_elements(num: int) -> Optional[List[Tuple]]:
 
 
 def load_algorithms():
-    with open('backend/db/description.json', 'r') as f:
+    with open(DESCRIPTION_PATH, 'r') as f:
         return json.load(f)
 
 def get_algorithm_description(algorithm_name):
@@ -87,4 +90,3 @@ def get_all_algorithm_description(algorithm_list):
     for algo in algorithm_list:
         info.append(get_algorithm_description(algo))
     return info
-

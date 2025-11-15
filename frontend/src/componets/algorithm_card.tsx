@@ -20,15 +20,35 @@ const AlgorithmCard: React.FC<AlgorithmCardProps> = ({
 }) => {
   return (
     <Card className={`shadow-sm ${className}`}>
-      <Card.Header className="bg-light">
-        <div className="d-flex justify-content-between align-items-center">
-          <Card.Title className="mb-0 h5">
-            {"Algorithm: "}{algorithm.name}{" - Type: "}{algorithm.type}
-          </Card.Title>  
-          <Badge bg="secondary" className="text-uppercase">{"c"}</Badge>
+      <Card.Header className="bg-light border-bottom">
+        <div className="d-flex justify-content-between align-items-start">
+          <div className="flex-grow-1">
+            <Card.Title className="mb-1 h5 fw-bold text-dark">
+              {algorithm.name}
+            </Card.Title>
+            
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <Badge 
+                bg="purple-400" 
+                className="px-2 py-1"
+                style={{ fontSize: '0.75rem' }}
+              >
+                Type: {algorithm.type}
+              </Badge>
+              
+              <Badge 
+                bg="secondary" 
+                className="px-2 py-1"
+                style={{ fontSize: '0.75rem' }}
+              >
+                Language: C
+              </Badge>
+            </div>
+          </div>
         </div>
+
         {algorithm.description && (
-          <Card.Text className="text-muted mt-2 mb-0">
+          <Card.Text className="text-dark mt-2 mb-0 pt-2 border-top">
             {algorithm.description}
           </Card.Text>
         )}
