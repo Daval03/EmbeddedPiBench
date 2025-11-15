@@ -80,10 +80,46 @@ class FrontEndClient:
                 "Error retrieving algorithms information",
                 str(e)
             ), 500
-
-
+        
+    def get_estimations_without_algorithms(self) -> Tuple[Dict[str, Any], int]:
+        """Obtiene todas las estimaciones de PI sin información de algoritmos"""
+        try:
+            estimations = fetch_all_estimations()
+            
+            estimations_data = []
+            for estimation in estimations:
+                estimation_data = {
+                    "id": estimation[0],
+                    "pi_estimate": float(estimation[1]) if estimation[1] else None,
+                    "algorithm": estimation[2], 
+                    "iterations": estimation[3],
+                    "time_seconds": estimation[4],  
+                    "iterations_per_second": estimation[5],  
+                    "correct_digits": estimation[6],  
+                    "perfect_decimal_precision": bool(estimation[8]),
+                    "absolute_error": estimation[9],
+                    "relative_error": estimation[10],
+                    "type": estimation[12]
+                }
+                estimations_data.append(estimation_data)
+            
+            response_data = {
+                "status": "success",
+                "data": {
+                    "estimations": estimations_data,
+                    "metadata": {
+                        "total_estimations": len(estimations_data)
+                    }
+                }
+            }
+            return response_data, 200
+            
+        except Exception as e:
+            logger.error(f"Error obteniendo estimaciones: {e}")
+            return self._create_error_response("Error retrieving estimations", str(e)), 500
+    
     def get_estimations(self) -> Tuple[Dict[str, Any], int]:
-        """Obtiene todas las estimaciones de PI"""
+        """Obtiene todas las estimaciones de PI con sus codigons"""
         try:
             estimations = fetch_all_estimations()
             algorithms = extract_all_algorithm()

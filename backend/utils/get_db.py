@@ -46,6 +46,7 @@ def fetch_all_estimations() -> Optional[List[Tuple]]:
     """Obtiene todas las estimaciones de pi."""
     query = "SELECT * FROM pi_estimations;"
     return execute_query(query)
+
 def fetch_all_type()-> Optional[List[Tuple]]:    
     """name and type"""
     query = "SELECT algorithm, type FROM pi_estimations;"
