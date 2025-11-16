@@ -6,7 +6,8 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, 'db', 'pi_database.db')
-DESCRIPTION_PATH = os.path.join(BASE_DIR, 'db', 'description.json')
+DESCRIPTION_PATH = os.path.join(BASE_DIR, 'db', 'formulaDescriptions.json')
+FORMULA_PATH = os.path.join(BASE_DIR, 'db', 'piFormulasData.json')
 
 @contextmanager
 def get_db_connection():
@@ -76,6 +77,31 @@ def load_algorithms(PATH):
     with open(PATH, 'r') as f:
         return json.load(f)
 
+
+def get_algorithm_details(algorithm_id):
+    """Obtiene toda la información detallada de un algoritmo específico"""
+    algorithms = load_algorithms(FORMULA_PATH)
+    
+    # Buscar por id
+    for algorithm in algorithms:
+        if algorithm['id'] == algorithm_id.lower():
+            return algorithm
+    
+    # Si no encuentra por id, buscar por nombre (case insensitive)
+    for algorithm in algorithms:
+        if algorithm['name'].lower() == algorithm_id.lower():
+            return algorithm
+    
+    available_ids = [algo['id'] for algo in algorithms]
+    return f"Algorithm '{algorithm_id}' not found. Available: {', '.join(available_ids)}"
+
+def get_all_formula_description(algorithm_list):
+    info = []
+    for id in algorithm_list:
+        info.append(get_algorithm_details(id))
+    return info
+
+
 def get_algorithm_description(algorithm_name):
     algorithms = load_algorithms(DESCRIPTION_PATH)
     key = algorithm_name.lower()
@@ -88,6 +114,6 @@ def get_algorithm_description(algorithm_name):
 
 def get_all_algorithm_description(algorithm_list):
     info = []
-    for algo in algorithm_list:
-        info.append(get_algorithm_description(algo))
+    for id in algorithm_list:
+        info.append(get_algorithm_description(id))
     return info

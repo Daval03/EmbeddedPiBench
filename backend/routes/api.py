@@ -29,6 +29,13 @@ def send_basic_estimations():
     data, status_code = client.get_estimations_without_algorithms()
     return jsonify(data), status_code
 
+@api_bp.route('/formulas', methods=['GET'])
+def send_formulas_data():
+    """Envía información completa de todas las fórmulas disponibles"""
+    client = current_app.frontend_client
+    data, status_code = client.get_formulas_info()
+    return jsonify(data), status_code
+
 @api_bp.route('/algorithms', methods=['GET'])
 def send_description_data():
     """ """
