@@ -72,12 +72,12 @@ def top_elements(num: int) -> Optional[List[Tuple]]:
 
 
 
-def load_algorithms():
-    with open(DESCRIPTION_PATH, 'r') as f:
+def load_algorithms(PATH):
+    with open(PATH, 'r') as f:
         return json.load(f)
 
 def get_algorithm_description(algorithm_name):
-    algorithms = load_algorithms()
+    algorithms = load_algorithms(DESCRIPTION_PATH)
     key = algorithm_name.lower()
     
     if key in algorithms:

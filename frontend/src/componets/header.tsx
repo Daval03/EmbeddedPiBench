@@ -59,16 +59,6 @@ const Header: React.FC = () => {
           >
             Matemáticas
           </Link>
-          <Link 
-            to="/implementation" 
-            className={`transition no-underline ${
-              isActive('/implementation')
-                ? 'text-white font-medium' 
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            Implementación
-          </Link>
         </nav>
       </div>
     </header>
