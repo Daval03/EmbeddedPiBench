@@ -1,8 +1,8 @@
 // src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './componets/header';
-import Footer from './componets/footer';
+import Header from './components/header';
+import Footer from './components/footer';
 import PiHomepage from './pages/home_page';
 import AlgorithmsPage from './pages/algorithm_page';
 import PiAlgorithmsComparison from './pages/comparison_page';

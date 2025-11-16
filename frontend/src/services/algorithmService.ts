@@ -1,4 +1,4 @@
-import { AlgorithmInfo } from "../componets/algorithm_card";
+import { AlgorithmInfo } from "../components/algorithm_card";
 
 // -------------------------------------
 // Generic Fetch Helper

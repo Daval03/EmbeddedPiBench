@@ -1,6 +1,6 @@
 // src/App.js
 import React, { useState, useEffect } from 'react';
-import {AlgorithmCard, AlgorithmInfo} from '../componets/algorithm_card';
+import {AlgorithmCard, AlgorithmInfo} from '../components/algorithm_card';
 import { Container, Row, Col } from 'react-bootstrap';
 import { fetchAlgorithms } from '../services/algorithmService';
 

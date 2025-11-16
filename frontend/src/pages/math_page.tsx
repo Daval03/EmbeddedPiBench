@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
-import { BookOpen, Sigma, TrendingUp, Info } from 'lucide-react';
-import { InlineMath, BlockMath } from "react-katex";
+import { Sigma} from 'lucide-react';
+import { Formula } from '../types/types';
+import { FormulaCard } from '../components/formula_card';
+import { FormulaModal } from '../components/formula_modal';
 import "katex/dist/katex.min.css";
-
-interface Formula {
-  id: string;
-  name: string;
-  formula: string;
-  description: string;
-  deepExplanation: string;
-  convergence: string;
-  applications: string;
-  complexity: string;
-}
 
 const formulasData: Formula[] = [
   {
@@ -196,113 +187,18 @@ const FormulasPage = () => {
           </p>
         </div>
 
-        {/* Formula Cards Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {formulasData.map((formula) => (
-            <div
-              key={formula.id}
-              className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6 hover:border-purple-500 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 cursor-pointer"
-              onClick={() => setSelectedFormula(formula)}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-xl font-bold text-purple-300">{formula.name}</h3>
-                <BookOpen className="w-5 h-5 text-purple-400 flex-shrink-0" />
-              </div>
-              
-              <div className="bg-slate-900/50 rounded p-3 mb-4 text-center text-sm text-slate-300 overflow-x-auto">
-                <BlockMath>{formula.formula}</BlockMath>
-              </div>
+        {/* Formula Cards Grid - Componente Reutilizable */}
+        <FormulaCard 
+          formulas={formulasData} 
+          onFormulaSelect={setSelectedFormula} 
+        />
 
-              <p className="text-slate-400 text-sm mb-4">{formula.description}</p>
-
-              <div className="flex items-center gap-2 text-xs">
-                <TrendingUp className="w-4 h-4 text-green-400" />
-                <span className="text-slate-400">{formula.convergence}</span>
-              </div>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedFormula(formula);
-                }}
-                className="mt-4 w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm font-medium"
-              >
-                Ver Detalles Completos
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* Detailed Modal */}
+        {/* Detailed Modal - Componente Reutilizable */}
         {selectedFormula && (
-          <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-            onClick={() => setSelectedFormula(null)}
-          >
-            <div
-              className="bg-slate-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-700"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 p-6 rounded-t-2xl">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="text-3xl font-bold mb-2">{selectedFormula.name}</h2>
-                    <p className="text-purple-100">{selectedFormula.description}</p>
-                  </div>
-                  <button
-                    onClick={() => setSelectedFormula(null)}
-                    className="text-white hover:bg-white/20 rounded-full p-2 transition-colors"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-6">
-                
-                {/* Formula */}
-                <div>
-                  <h3 className="text-lg font-semibold text-purple-300 mb-3 flex items-center gap-2">
-                    <Sigma className="w-5 h-5" />
-                    Fórmula Matemática
-                  </h3>
-                  <div className="bg-slate-900 rounded-lg p-4 text-center text-sm text-slate-200 overflow-x-auto border border-slate-700">
-                    <BlockMath >{selectedFormula.formula}</BlockMath>
-                    
-                  </div>
-                </div>
-
-                {/* Deep Explanation */}
-                <div>
-                  <h3 className="text-lg font-semibold text-purple-300 mb-3 flex items-center gap-2">
-                    <Info className="w-5 h-5" />
-                    Explicación Profunda
-                  </h3>
-                  <p className="text-slate-300 leading-relaxed">{selectedFormula.deepExplanation}</p>
-                </div>
-
-                {/* Technical Details Grid */}
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
-                    <h4 className="font-semibold text-green-400 mb-2">Convergencia</h4>
-                    <p className="text-slate-300 text-sm">{selectedFormula.convergence}</p>
-                  </div>
-                  
-                  <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
-                    <h4 className="font-semibold text-blue-400 mb-2">Complejidad</h4>
-                    <p className="text-slate-300 text-sm">{selectedFormula.complexity}</p>
-                  </div>
-                </div>
-
-                {/* Applications */}
-                <div>
-                  <h3 className="text-lg font-semibold text-purple-300 mb-3">Aplicaciones Prácticas</h3>
-                  <p className="text-slate-300">{selectedFormula.applications}</p>
-                </div>
-
-              </div>
-            </div>
-          </div>
+          <FormulaModal 
+            formula={selectedFormula} 
+            onClose={() => setSelectedFormula(null)} 
+          />
         )}
 
       </div>
