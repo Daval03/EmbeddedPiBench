@@ -6,7 +6,6 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, 'db', 'pi_database.db')
-DESCRIPTION_PATH = os.path.join(BASE_DIR, 'db', 'formulaDescriptions.json')
 FORMULA_PATH = os.path.join(BASE_DIR, 'db', 'piFormulasData.json')
 
 @contextmanager
@@ -72,7 +71,6 @@ def top_elements(num: int) -> Optional[List[Tuple]]:
     return execute_query(query, (num,))
 
 
-
 def load_algorithms(PATH):
     with open(PATH, 'r') as f:
         return json.load(f)
@@ -82,12 +80,10 @@ def get_algorithm_details(algorithm_id):
     """Obtiene toda la información detallada de un algoritmo específico"""
     algorithms = load_algorithms(FORMULA_PATH)
     
-    # Buscar por id
     for algorithm in algorithms:
         if algorithm['id'] == algorithm_id.lower():
             return algorithm
-    
-    # Si no encuentra por id, buscar por nombre (case insensitive)
+        
     for algorithm in algorithms:
         if algorithm['name'].lower() == algorithm_id.lower():
             return algorithm
@@ -99,21 +95,4 @@ def get_all_formula_description(algorithm_list):
     info = []
     for id in algorithm_list:
         info.append(get_algorithm_details(id))
-    return info
-
-
-def get_algorithm_description(algorithm_name):
-    algorithms = load_algorithms(DESCRIPTION_PATH)
-    key = algorithm_name.lower()
-    
-    if key in algorithms:
-        return f"{algorithm_name.upper()}: {algorithms[key]}"
-    else:
-        available = ", ".join(algorithms.keys())
-        return f"Algorithm '{algorithm_name}' not found. Available: {available}"
-
-def get_all_algorithm_description(algorithm_list):
-    info = []
-    for id in algorithm_list:
-        info.append(get_algorithm_description(id))
     return info

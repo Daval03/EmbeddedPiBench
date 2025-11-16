@@ -10,7 +10,7 @@
     "complexity": "O(n) para calcular n dígitos específicos"
   },
   {
-    "id": "chudnovsky",
+    "id": "chudnovsky_fast",
     "name": "Algoritmo de Chudnovsky",
     "formula": "\\frac{1}{\\pi} = \\frac{12}{\\sqrt{640320^3}} \\sum_{k=0}^{\\infty} \\frac{(-1)^k (6k)! (13591409 + 545140134k)}{(3k)! (k!)^3 (640320^{3k})}",
     "description": "El algoritmo más rápido conocido para calcular billones de dígitos de π. Cada término adiciona aproximadamente 14 dígitos decimales correctos.",
@@ -30,7 +30,7 @@
     "complexity": "O(M(n) log n) donde M(n) es el costo de multiplicar números de n dígitos"
   },
   {
-    "id": "ramanujan",
+    "id": "ramanujan_fast",
     "name": "Serie de Ramanujan",
     "formula": "\\frac{1}{\\pi} = \\frac{2\\sqrt{2}}{9801} \\sum_{k=0}^{\\infty} \\frac{(4k)! (1103 + 26390k)}{(k!)^4 (396^{4k})}",
     "description": "Serie descubierta por el matemático indio Srinivasa Ramanujan, converge a razón de 8 dígitos por término.",
@@ -110,7 +110,7 @@
     "complexity": "O(n) con precisión mejorada"
   },
   {
-    "id": "coprimes",
+    "id": "pi_coprimes",
     "name": "Método de Coprimos",
     "formula": "\\frac{\\pi^2}{6} = \\lim_{n \\to \\infty} \\frac{n^2}{\\#\\{(a,b): 1\\le a,b\\le n,\\,\\gcd(a,b)=1\\}}",
     "description": "Método basado en la probabilidad de que dos enteros aleatorios sean coprimos (sin factores comunes).",

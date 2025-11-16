@@ -51,13 +51,21 @@ class FrontEndClient:
 
         try:
             algorithms = extract_all_algorithm()                  
-            descriptions_map = get_all_algorithm_description(list(algorithms.keys()))
+            algorithm_ids = list(algorithms.keys())
+            formulas_data = get_all_formula_description(algorithm_ids)
             types_map = dict(fetch_all_type())
+
+            # Crear un mapa de descripciones por ID
+            descriptions_map = {}
+            for formula_data in formulas_data:
+                if isinstance(formula_data, dict):
+                    algorithm_id = formula_data['id']
+                    descriptions_map[algorithm_id] = formula_data.get('description', '')
 
             algorithms_data = {
                 name: {
                     "implementation": code,
-                    "description": self._find_algorithm_description(name, descriptions_map),
+                    "description": descriptions_map.get(name, ''),
                     "type": types_map.get(name, "Unknown")
                 }
                 for name, code in algorithms.items()
@@ -80,7 +88,8 @@ class FrontEndClient:
                 "Error retrieving algorithms information",
                 str(e)
             ), 500
-        
+
+
     def get_estimations_without_algorithms(self) -> Tuple[Dict[str, Any], int]:
         """Obtiene todas las estimaciones de PI sin información de algoritmos"""
         try:
@@ -126,40 +135,25 @@ class FrontEndClient:
         - Metadatos estructurados
         """
         try:
-            # Obtener todos los algoritmos disponibles (ids)
             algorithms = extract_all_algorithm()
             algorithm_ids = list(algorithms.keys())
-            
-            # Obtener información completa de todas las fórmulas
+        
             formulas_data = get_all_formula_description(algorithm_ids)
-            
-            # Obtener descripciones cortas
-            short_descriptions_map = get_all_algorithm_description(algorithm_ids)
-            
-            # Obtener tipos de algoritmos
-            types_map = dict(fetch_all_type())
-            
-            # Construir respuesta estructurada
+
             formulas_info = {}
             for formula_data in formulas_data:
-                if isinstance(formula_data, dict):  # Verificar que es datos válidos
+                if isinstance(formula_data, dict):  
                     algorithm_id = formula_data['id']
-                    
-                    # Encontrar la descripción corta correspondiente
-                    short_description = self._find_algorithm_description(algorithm_id, short_descriptions_map)
                     
                     formulas_info[algorithm_id] = {
                         "id": algorithm_id,
                         "name": formula_data.get('name', ''),
                         "formula": formula_data.get('formula', ''),
-                        "short_description": short_description,
                         "full_description": formula_data.get('description', ''),
                         "deep_explanation": formula_data.get('deepExplanation', ''),
                         "convergence": formula_data.get('convergence', ''),
                         "applications": formula_data.get('applications', ''),
                         "complexity": formula_data.get('complexity', ''),
-                        "type": types_map.get(algorithm_id, "Unknown"),
-                        "implementation": algorithms.get(algorithm_id, '')  # Código del algoritmo
                     }
             
             response_data = {
@@ -168,7 +162,6 @@ class FrontEndClient:
                     "formulas": formulas_info,
                     "metadata": {
                         "total_formulas": len(formulas_info),
-                        "formula_categories": list(set(types_map.values())),
                         "available_ids": list(formulas_info.keys())
                     }
                 }
