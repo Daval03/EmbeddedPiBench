@@ -1,5 +1,5 @@
 import { AlgorithmInfo } from "../components/algorithm_card";
-
+import { Estimation, Formula } from '../types/types';
 // -------------------------------------
 // Generic Fetch Helper
 // -------------------------------------
@@ -49,17 +49,7 @@ export async function fetchAlgorithms(): Promise<AlgorithmInfo[]> {
 // -------------------------------------
 // Estimation Service
 // -------------------------------------
-export interface Estimation {
-  id: number;
-  algorithm: string;
-  pi_estimate: number;
-  correct_digits: number;
-  iterations: number;
-  time_seconds: number;
-  iterations_per_second: number;
-  absolute_error: number;
-  type: "Probability" | "Infinite Series" | "Numerical Methods";
-}
+
 
 const ESTIMATIONS_URL = "http://192.168.18.3:5000/api/v1/estimations/basic";
 
@@ -80,6 +70,32 @@ export async function fetchEstimations(): Promise<Estimation[]> {
     }));
   } catch (error) {
     console.error("⚠️ Error fetching estimations:", error);
+    return [];
+  }
+}
+const ALGORITHMS_INFO_URL = "http://192.168.18.3:5000/api/v1/formulas";
+
+// En algorithmService.ts - versión corregida
+export async function fetchAlgorithmsInfo(): Promise<Formula[]> {
+  try {
+    const json = await apiGet<any>(ALGORITHMS_INFO_URL);
+
+    if (!json?.data?.formulas || json.status !== "success") {
+      throw new Error("Respuesta inválida del servidor");
+    }
+
+    return Object.entries(json.data.formulas).map(([key, formulaData]: [string, any]): Formula => ({
+      id: formulaData.id || key,
+      name: formulaData.name || key.replace(/_/g, " ").toUpperCase(),
+      formula: formulaData.formula || "",
+      description: formulaData.full_description || formulaData.description || "Sin descripción",
+      deepExplanation: formulaData.deep_explanation || "Información detallada no disponible",
+      convergence: formulaData.convergence || "No especificada",
+      applications: formulaData.applications || "No especificadas",
+      complexity: formulaData.complexity || "No especificada"
+    }));
+  } catch (error) {
+    console.error("⚠️ Error fetching formulas info:", error);
     return [];
   }
 }

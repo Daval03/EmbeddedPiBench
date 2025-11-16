@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Clock, Target, Zap, TrendingUp } from 'lucide-react';
-import { fetchEstimations, Estimation } from '../services/algorithmService';
+import { fetchEstimations } from '../services/algorithmService';
+import { Estimation } from '../types/types';
 
 // Definir el tipo para las categorías de algoritmos
 type AlgorithmType = "Probability" | "Infinite Series" | "Numerical Methods";
