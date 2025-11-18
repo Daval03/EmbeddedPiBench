@@ -80,7 +80,6 @@ void test_single_iteration(void) {
 }
 
 void run_pi_calculations_tests(void) {
-    printf("\n=== PI CALCULATIONS TESTS ===\n");
     RUN_TEST(test_leibniz_basic);
     RUN_TEST(test_monte_carlo_basic);
     RUN_TEST(test_euler_basic);
