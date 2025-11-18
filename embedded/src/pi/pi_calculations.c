@@ -25,7 +25,7 @@ long double buffon(long long needles){
 
     for(long long i=0; i < needles; ++i){
         long double center = (long double)rand() / RAND_MAX * 0.5L;
-        long double angle = (long double)rand() / RAND_MAX * (M_PI/2.0L);
+        long double angle = (long double)rand() / RAND_MAX * (PI_REFERENCE/2.0L);
         if(center <= 0.5L * sin(angle)){
             crosses++;
         }   
@@ -38,17 +38,22 @@ long double buffon(long long needles){
 }
 
 long double pi_coprimes(long long pairs) {
-    auto gcd = [](long long a, long long b) {
-        return b == 0 ? a : gcd(b, a % b);
-    };
-    
     long long coprimes = 0;
     srand(time(NULL));
     
     for(long long i = 0; i < pairs; i++) {
         long long a = rand() % 1000000 + 1;
         long long b = rand() % 1000000 + 1;
-        if(gcd(a, b) == 1) coprimes++;
+        
+        // Inline GCD calculation
+        long long x = a, y = b;
+        while (y != 0) {
+            long long r = x % y;
+            x = y;
+            y = r;
+        }
+        
+        if(x == 1) coprimes++;
     }
     
     return sqrtl(6.0L / ((long double)coprimes / pairs));

@@ -4,11 +4,11 @@ CXX ?= gcc
 CXXFLAGS = -O2 
 
 # Nombre del ejecutable
-TARGET = pi
+TARGET = pi_server
 BUILD_DIR = build
 
 # Archivos fuente (lista explícita para mejor control)
-SRCS = main.c pi/pi_calculations.c pi/pi_optimization.c server/server.c
+SRCS = src/main.c src/pi/pi_calculations.c src/pi/pi_optimization.c src/server/server.c
 
 # build all
 all: $(BUILD_DIR)/$(TARGET)

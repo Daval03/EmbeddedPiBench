@@ -180,7 +180,7 @@ void server_handle_client(int client_fd) {
             "{\"status\": \"ok\", "
             "\"service\": \"Pi Calculator C Server\", "
             "\"timestamp\": %ld, "
-            "\"algorithms_available\": %d}",
+            "\"algorithms_available\": %zu}",
             time(NULL),
             sizeof(ALGORITHMS) / sizeof(ALGORITHMS[0]) - 1
         );
@@ -192,7 +192,7 @@ void server_handle_client(int client_fd) {
         server_handle_algorithm(client_fd, algorithm);
     }
     else {
-        char json_error[128];
+        char json_error[512];
         snprintf(json_error, sizeof(json_error),
             "{\"error\": \"Route not found\", \"path\": \"%s\"}",
             path
