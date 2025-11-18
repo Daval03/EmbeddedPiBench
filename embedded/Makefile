@@ -12,7 +12,7 @@ BUILD_DIR = build
 SRCS = src/main.c src/pi/pi_calculations.c src/pi/pi_optimization.c src/server/server.c
 # Excluir main.c para tests
 SRCS_WITHOUT_MAIN = src/pi/pi_calculations.c src/pi/pi_optimization.c src/server/server.c
-TEST_SRCS = test/test_main.c test/test_pi_calculations.c
+TEST_SRCS = test/test_main.c test/test_pi_calculations.c test/test_pi_optimization.c test/test_common.c
 UNITY_SRC = libs/Unity/src/unity.c
 
 # Build principal

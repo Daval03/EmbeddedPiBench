@@ -1,11 +1,4 @@
 #include "test_pi_calculations.h"
-void setUp(void) {
-    // Configuración antes de cada test
-}
-
-void tearDown(void) {
-    // Limpieza después de cada test
-}
 
 void test_leibniz_basic(void) {
     long double result = leibniz(1000000);
@@ -84,4 +77,23 @@ void test_zero_iterations(void) {
 void test_single_iteration(void) {
     long double result = leibniz(1);
     TEST_ASSERT_EQUAL_FLOAT(4.0, result); // 4 * (1/1) = 4.0
+}
+
+void run_pi_calculations_tests(void) {
+    printf("\n=== PI CALCULATIONS TESTS ===\n");
+    RUN_TEST(test_leibniz_basic);
+    RUN_TEST(test_monte_carlo_basic);
+    RUN_TEST(test_euler_basic);
+    RUN_TEST(test_euler_kahan_basic);
+    RUN_TEST(test_nilakantha_basic);
+    RUN_TEST(test_gauss_legendre_basic);
+    RUN_TEST(test_bbp_basic);
+    RUN_TEST(test_pi_coprimes_basic);
+    RUN_TEST(test_buffon_basic);
+    RUN_TEST(test_ramanujan_fast_basic);
+    RUN_TEST(test_chudnovsky_fast_basic);
+    RUN_TEST(test_borwein_basic);
+    RUN_TEST(test_methods_consistency);
+    RUN_TEST(test_zero_iterations);
+    RUN_TEST(test_single_iteration);
 }
