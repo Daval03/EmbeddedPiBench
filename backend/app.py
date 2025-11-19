@@ -3,7 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 from config import get_config
 from services.server_c_client import ServerCClient
-from services.frontend_client import FrontEndClient  # Add this import
+from services.frontend_client import FrontEndClient
 from routes.api import api_bp
 
 

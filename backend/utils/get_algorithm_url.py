@@ -1,8 +1,7 @@
 import requests
 import re
-import wikipediaapi
 
-RAW_URL = "https://raw.githubusercontent.com/Daval03/EmbeddedPiBench/refs/heads/develop/embedded/pi/pi_calculations.c"
+RAW_URL = "https://raw.githubusercontent.com/Daval03/EmbeddedPiBench/refs/heads/develop/embedded/src/pi/pi_calculations.c"
            
 def extract_all_algorithm():
     try:
