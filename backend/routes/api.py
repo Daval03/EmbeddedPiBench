@@ -1,8 +1,6 @@
 from flask import Blueprint, jsonify, current_app
 import logging
-
 logger = logging.getLogger(__name__)
-
 # Blueprint para las rutas de la API
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 
