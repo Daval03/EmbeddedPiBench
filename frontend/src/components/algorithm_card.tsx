@@ -1,18 +1,6 @@
 import React from 'react';
 import { Card, Badge } from 'react-bootstrap';
-
-interface AlgorithmInfo {
-  name: string;
-  description?: string;
-  code: string;
-  type: string;
-  
-}
-
-interface AlgorithmCardProps {
-  algorithm: AlgorithmInfo;
-  className?: string;
-}
+import { AlgorithmCardProps } from '../types/types';
 
 const AlgorithmCard: React.FC<AlgorithmCardProps> = ({ 
   algorithm, 
@@ -64,4 +52,4 @@ const AlgorithmCard: React.FC<AlgorithmCardProps> = ({
   );
 };
 
-export {AlgorithmCard, AlgorithmInfo};
+export {AlgorithmCard};

@@ -1,12 +1,7 @@
 import React from 'react';
 import { Sigma, Info } from 'lucide-react';
 import { BlockMath } from "react-katex";
-import { Formula } from '../types/types';
-
-interface FormulaModalProps {
-  formula: Formula;
-  onClose: () => void;
-}
+import { FormulaModalProps } from '../types/types';
 
 export const FormulaModal: React.FC<FormulaModalProps> = ({ 
   formula, 

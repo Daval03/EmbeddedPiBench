@@ -6,7 +6,7 @@ import { FormulaModal } from '../components/formula_modal';
 import { fetchAlgorithmsInfo } from '../services/algorithmService';
 import "katex/dist/katex.min.css";
 
-const FormulasPage = () => {
+const FormulasPage: React.FC = () => {
   const [selectedFormula, setSelectedFormula] = useState<Formula | null>(null);
   const [formulasData, setAlgorithms] = useState<Formula[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,13 +45,13 @@ const FormulasPage = () => {
           </p>
         </div>
 
-        {/* Formula Cards Grid - Componente Reutilizable */}
+        {/* Formula Cards Grid*/}
         <FormulaCard 
           formulas={formulasData} 
           onFormulaSelect={setSelectedFormula} 
         />
 
-        {/* Detailed Modal - Componente Reutilizable */}
+        {/* Detailed Modal */}
         {selectedFormula && (
           <FormulaModal 
             formula={selectedFormula} 

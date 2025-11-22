@@ -1,4 +1,4 @@
-import { AlgorithmInfo } from "../components/algorithm_card";
+import { AlgorithmInfo } from "../types/types";
 import { Estimation, Formula } from '../types/types';
 // -------------------------------------
 // Generic Fetch Helper

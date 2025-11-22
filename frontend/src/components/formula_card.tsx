@@ -1,12 +1,7 @@
 import React from 'react';
 import { BookOpen, TrendingUp } from 'lucide-react';
 import { BlockMath } from "react-katex";
-import { Formula } from '../types/types';
-
-interface FormulaCardProps {
-  formulas: Formula[];
-  onFormulaSelect: (formula: Formula) => void;
-}
+import { FormulaCardProps } from '../types/types';
 
 export const FormulaCard: React.FC<FormulaCardProps> = ({ 
   formulas, 

@@ -1,8 +1,10 @@
 // src/App.js
 import React, { useState, useEffect } from 'react';
-import {AlgorithmCard, AlgorithmInfo} from '../components/algorithm_card';
+import {AlgorithmCard} from '../components/algorithm_card';
 import { Container, Row, Col } from 'react-bootstrap';
 import { fetchAlgorithms } from '../services/algorithmService';
+import {AlgorithmInfo} from '../types/types';
+
 
 const AlgorithmsPage: React.FC = () => {
   const [algorithms, setAlgorithms] = useState<AlgorithmInfo[]>([]);

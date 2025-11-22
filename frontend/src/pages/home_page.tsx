@@ -1,17 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Activity, Zap, Target, Code } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-interface Algorithm {
-  name: string;
-  digits: number;
-  time: number;
-  color: string;
-}
-
-const PiHomepage = () => {
-
-  
+const PiHomepage: React.FC = () =>  {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Hero Section */}
