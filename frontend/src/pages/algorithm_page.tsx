@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import {AlgorithmCard} from '../components/algorithm_card';
 import { Container, Row, Col } from 'react-bootstrap';
-import { fetchAlgorithms } from '../services/algorithmService';
+import { fetchAlgorithms } from '../services/apiService';
 import {AlgorithmInfo} from '../types/types';
 
 

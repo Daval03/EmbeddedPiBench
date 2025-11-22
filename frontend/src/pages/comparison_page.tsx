@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Clock, Target, Zap, TrendingUp } from 'lucide-react';
-import { fetchEstimations } from '../services/algorithmService';
+import { fetchEstimations } from '../services/apiService';
 import { Estimation, AlgorithmType } from '../types/types';
 
 

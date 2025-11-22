@@ -3,7 +3,7 @@ import { Sigma} from 'lucide-react';
 import { Formula } from '../types/types';
 import { FormulaCard } from '../components/formula_card';
 import { FormulaModal } from '../components/formula_modal';
-import { fetchAlgorithmsInfo } from '../services/algorithmService';
+import { fetchAlgorithmsInfo } from '../services/apiService';
 import "katex/dist/katex.min.css";
 
 const FormulasPage: React.FC = () => {
