@@ -6,7 +6,12 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+
   frontend-tests:
     name: Frontend Tests
     runs-on: ubuntu-latest
@@ -26,10 +31,10 @@ jobs:
       working-directory: ./frontend
       run: npm ci
     
-    - name: Run tests
+    - name: Run Vitest
       working-directory: ./frontend
-      run: npm test -- --run --ci
-      
+      run: npm run test:ci
+
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
@@ -42,17 +47,16 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+        cache: pip
+        cache-dependency-path: ./backend/requirements.txt
     
     - name: Install dependencies
       working-directory: ./backend
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then
-          pip install -r requirements.txt
-        fi
-        pip install pytest flask requests
-    
-    - name: Run tests
+        pip install -r requirements.txt
+
+    - name: Run Tests
       working-directory: ./backend
       run: python -m pytest -v
 
@@ -64,7 +68,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        submodules: 'recursive'
+        submodules: recursive
     
     - name: Install build dependencies
       run: |
@@ -79,7 +83,7 @@ jobs:
           git clone --depth 1 https://github.com/ThrowTheSwitch/Unity.git libs/Unity
         fi
     
-    - name: Run tests
+    - name: Run Embedded Unit Tests
       working-directory: ./embedded
       run: make test
 
@@ -89,5 +93,5 @@ jobs:
     needs: [frontend-tests, backend-tests, embedded-tests]
     
     steps:
-    - name: Confirm all tests passed
+    - name: Confirm Success
       run: echo "✅ All unit tests passed successfully!"
