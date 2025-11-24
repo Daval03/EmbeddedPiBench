@@ -28,9 +28,8 @@ jobs:
     
     - name: Run tests
       working-directory: ./frontend
-      run: npx vitest --run --coverage --ci
-
-
+      run: npm test -- --run --ci
+      
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
