@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach,Mock } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 import PiAlgorithmsComparison from "../../src/pages/comparison_page";
 import { fetchEstimations } from "../../src/services/apiService";
 
@@ -36,7 +36,8 @@ const mockData = [
 describe("PiAlgorithmsComparison Component", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    (fetchEstimations as vi.Mock).mockResolvedValue(mockData);
+    (fetchEstimations as Mock).mockResolvedValue(mockData);
+    //(fetchEstimations as vi.Mock).mockResolvedValue(mockData);
   });
 
   it("shows loading state initially", () => {
