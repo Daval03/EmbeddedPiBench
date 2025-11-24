@@ -132,6 +132,8 @@ make all
 }
 ```
 
+https://github.com/Daval03/EmbeddedPiBench/actions/workflows/ci.yml
+
 ## 🎯 Features
 
 ### Algorithm Comparison
