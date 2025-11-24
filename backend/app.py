@@ -3,7 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 from config import get_config
 from services.server_c_client import ServerCClient
-from services.frontend_client import FrontEndClient  # Add this import
+from services.frontend_client import FrontEndClient
 from routes.api import api_bp
 
 
@@ -52,7 +52,7 @@ def create_app(config_name='default'):
         default_timeout=app.config['SERVER_C_TIMEOUT']
     )
     
-    # Inicializar cliente del Frontend (Add this)
+    # Inicializar cliente del Frontend
     app.frontend_client = FrontEndClient(
         base_url=app.config.get('FRONTEND_BASE', 'http://localhost:3000'),
         default_timeout=app.config.get('FRONTEND_DATA_TIMEOUT', 30)

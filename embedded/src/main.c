@@ -1,5 +1,5 @@
-#include "../embedded/pi/pi_optimization.h"
-#include "../embedded/server/server.h"
+#include "pi/pi_optimization.h"
+#include "server/server.h"
 #include <stdio.h>
 #include <signal.h>
 

@@ -1,12 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Clock, Target, Zap, TrendingUp } from 'lucide-react';
-import { fetchEstimations } from '../services/algorithmService';
-import { Estimation } from '../types/types';
+import { fetchEstimations } from '../services/apiService';
+import { Estimation, AlgorithmType } from '../types/types';
 
-// Definir el tipo para las categorías de algoritmos
-type AlgorithmType = "Probability" | "Infinite Series" | "Numerical Methods";
 
-const PiAlgorithmsComparison = () => {
+const PiAlgorithmsComparison: React.FC = () => {
   const [sortBy, setSortBy] = useState('id');
   const [filterType, setFilterType] = useState<AlgorithmType | 'all'>('all');
   const [algorithms, setAlgorithms] = useState<Estimation[]>([]);
@@ -84,10 +82,10 @@ const PiAlgorithmsComparison = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent py-2">
             Comparación de Algoritmos π
           </h1>
-          <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-400 max-w-3xl mx-auto ">
             Evaluación comparativa de {algorithms.length} algoritmos ejecutados en Raspberry Pi 4
           </p>
         </div>

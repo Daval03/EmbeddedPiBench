@@ -1,29 +1,37 @@
-
 # Compilador y flags
 CXX ?= gcc
 CXXFLAGS = -O2 
+TEST_CXXFLAGS = -g -O0
 
-# Nombre del ejecutable
-TARGET = pi
+# Nombres
+TARGET = pi_server
+TEST_RUNNER = test_runner
 BUILD_DIR = build
 
-# Archivos fuente (lista explícita para mejor control)
-SRCS = main.c pi/pi_calculations.c pi/pi_optimization.c server/server.c
+# Archivos fuente
+SRCS = src/main.c src/pi/pi_calculations.c src/pi/pi_optimization.c src/server/server.c
+# Excluir main.c para tests
+SRCS_WITHOUT_MAIN = src/pi/pi_calculations.c src/pi/pi_optimization.c src/server/server.c
+TEST_SRCS = test/test_main.c test/test_pi_calculations.c test/test_pi_optimization.c test/test_common.c test/test_server.c
+UNITY_SRC = libs/Unity/src/unity.c
 
-# build all
+# Build principal
 all: $(BUILD_DIR)/$(TARGET)
 
 $(BUILD_DIR)/$(TARGET): $(SRCS)
 	$(CXX) -o $@ $(SRCS) $(CXXFLAGS)
 
+# Build pruebas - EXCLUIR src/main.c
+$(BUILD_DIR)/$(TEST_RUNNER): $(TEST_SRCS) $(SRCS_WITHOUT_MAIN) $(UNITY_SRC)
+	$(CXX) -o $@ $(TEST_SRCS) $(SRCS_WITHOUT_MAIN) $(UNITY_SRC) $(CXXFLAGS)
+
+test: $(BUILD_DIR)/$(TEST_RUNNER)
+	./$(BUILD_DIR)/$(TEST_RUNNER)
+
 clean:
-	rm -f $(BUILD_DIR)/$(TARGET)
+	rm -f $(BUILD_DIR)/$(TARGET) $(BUILD_DIR)/$(TEST_RUNNER)
 
 run: $(BUILD_DIR)/$(TARGET)
 	./$(BUILD_DIR)/$(TARGET)
 
-debug: CXXFLAGS += -g
-debug: $(BUILD_DIR)/$(TARGET)
-
-.PHONY: all clean run debug
-
+.PHONY: all clean run test

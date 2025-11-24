@@ -1,10 +1,6 @@
 import React from 'react';
 import { Github, Mail, Heart } from 'lucide-react';
-
-interface FooterProps {
-  companyName: string;
-  year: number;
-}
+import { FooterProps} from '../types/types';
 
 const Footer: React.FC<FooterProps> = ({ companyName, year }) => {
   return (
@@ -56,7 +52,7 @@ const Footer: React.FC<FooterProps> = ({ companyName, year }) => {
             <h3 className="text-white font-semibold mb-3 text-sm">Stack Tecnológico</h3>
             <ul className="space-y-2 text-sm text-slate-500">
               <li>• Raspberry Pi 4</li>
-              <li>• C++ (long double)</li>
+              <li>• C (long double)</li>
               <li>• React + TypeScript</li>
               <li>• Tailwind CSS</li>
             </ul>
@@ -73,7 +69,7 @@ const Footer: React.FC<FooterProps> = ({ companyName, year }) => {
           
           <div className="flex gap-4">
             <a 
-              href="https://github.com" 
+              href="https://github.com/Daval03" 
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-purple-400 transition"
@@ -82,7 +78,7 @@ const Footer: React.FC<FooterProps> = ({ companyName, year }) => {
               <Github className="w-5 h-5" />
             </a>
             <a 
-              href="mailto:contact@example.com"
+              href="mailto:cambroneroaldo03@gmail.com"
               className="hover:text-purple-400 transition"
               aria-label="Email"
             >

@@ -183,6 +183,5 @@ PiResult optimize_pi_precision(CalculatePi func, const char* func_name, double t
         .error = fabsl(best.estimate - PI_REFERENCE)
     };
     
-    printf("\n Finish !!! \n");
     return result;
 }

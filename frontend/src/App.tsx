@@ -22,7 +22,7 @@ const App: React.FC = () => {
             <Route path="/math" element={<FormulasPage />} />
           </Routes>
         </div>
-        <Footer companyName='Test' year={2024}/>
+        <Footer companyName='' year={2025}/>
       </div>
     </Router>
   );
