@@ -9,3 +9,5 @@ afterEach(() => {
   cleanup();
   vi.clearAllMocks();
 });
+
+global.fetch = vi.fn()
