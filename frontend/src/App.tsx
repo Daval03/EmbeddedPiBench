@@ -7,6 +7,7 @@ import PiHomepage from './pages/home_page';
 import AlgorithmsPage from './pages/algorithm_page';
 import PiAlgorithmsComparison from './pages/comparison_page';
 import FormulasPage from './pages/math_page';
+import PiAlgorithmsTable from './pages/view_page';
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
             <Route path="/algorithms" element={<AlgorithmsPage />} />
             <Route path="/compare" element={<PiAlgorithmsComparison />} />
             <Route path="/math" element={<FormulasPage />} />
+            <Route path="/view" element={<PiAlgorithmsTable />} />
           </Routes>
         </div>
         <Footer companyName='' year={2025}/>

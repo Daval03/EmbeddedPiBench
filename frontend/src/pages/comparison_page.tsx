@@ -192,8 +192,8 @@ const PiAlgorithmsComparison: React.FC = () => {
               {/* Header */}
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    {algo.algorithm}
+                  <h3 className="text-2xl font-bold text-white mb-2 uppercase">
+                    {algo.algorithm.replace(/_/g, ' ')}
                   </h3>
                   <span className={`inline-block px-3 py-1 rounded-full text-sm border ${getTypeColor(algo.type)}`}>
                     {algo.type}
@@ -272,10 +272,10 @@ const PiAlgorithmsComparison: React.FC = () => {
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 border border-blue-500/30 rounded-xl p-6">
               <div className="text-sm text-blue-300 mb-2">Más Rápido</div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-white uppercase">
                 {algorithms.reduce((min, algo) => 
                   algo.time_seconds < min.time_seconds ? algo : min
-                ).algorithm}
+                ).algorithm.replace(/_/g, ' ')}
               </div>
               <div className="text-sm text-slate-400 mt-1">
                 {(algorithms.reduce((min, algo) => 
@@ -286,10 +286,10 @@ const PiAlgorithmsComparison: React.FC = () => {
 
             <div className="bg-gradient-to-br from-purple-600/20 to-purple-800/20 border border-purple-500/30 rounded-xl p-6">
               <div className="text-sm text-purple-300 mb-2">Más Preciso</div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-white uppercase">
                 {algorithms.reduce((max, algo) => 
                   algo.correct_digits > max.correct_digits ? algo : max
-                ).algorithm}
+                ).algorithm.replace(/_/g, ' ')}
               </div>
               <div className="text-sm text-slate-400 mt-1">
                 {algorithms.reduce((max, algo) => 
@@ -300,10 +300,10 @@ const PiAlgorithmsComparison: React.FC = () => {
 
             <div className="bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 border border-emerald-500/30 rounded-xl p-6">
               <div className="text-sm text-emerald-300 mb-2">Más Eficiente</div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-white uppercase">
                 {algorithms.reduce((max, algo) => 
                   algo.iterations_per_second > max.iterations_per_second ? algo : max
-                ).algorithm}
+                ).algorithm.replace(/_/g, ' ')}
               </div>
               <div className="text-sm text-slate-400 mt-1">
                 {(algorithms.reduce((max, algo) => 
