@@ -59,6 +59,16 @@ const Header: React.FC = () => {
           >
             Matemáticas
           </Link>
+          <Link 
+            to="/view" 
+            className={`transition no-underline ${
+              isActive('/view')
+                ? 'text-white font-medium' 
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Muestra
+          </Link>
         </nav>
       </div>
     </header>

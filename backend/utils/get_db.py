@@ -1,6 +1,6 @@
 import sqlite3
 from contextlib import contextmanager
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict, Any
 import json
 import os
 
@@ -70,6 +70,65 @@ def top_elements(num: int) -> Optional[List[Tuple]]:
     """
     return execute_query(query, (num,))
 
+def update_estimation_after_rerun(algorithm_name: str, new_data: Dict[str, Any]) -> bool:
+    """
+    Actualiza un registro específico después de re-ejecutar un algoritmo.
+    
+    Args:
+        algorithm_name: Nombre del algoritmo a actualizar
+        new_data: Datos nuevos del cálculo (resultado del servidor C)
+        
+    Returns:
+        True si fue exitoso, False si hubo error
+    """
+    update_fields = {
+        'pi_estimate': new_data.get('pi_estimate'),
+        'iterations': new_data.get('iterations'),
+        'time_seconds': new_data.get('time_seconds'),
+        'iterations_per_second': new_data.get('iterations_per_second'),
+        'correct_digits': new_data.get('correct_digits'),
+        'max_decimal_digits': new_data.get('max_decimal_digits'),
+        'perfect_decimal_precision': new_data.get('perfect_decimal_precision'),
+        'absolute_error': new_data.get('absolute_error'),
+        'relative_error': new_data.get('relative_error')
+    }
+    
+    # Filtrar campos None
+    update_fields = {k: v for k, v in update_fields.items() if v is not None}
+    
+    if not update_fields:
+        print("No hay datos válidos para actualizar")
+        return False
+    
+    # Construir la consulta UPDATE
+    set_parts = [f"{field} = ?" for field in update_fields.keys()]
+    params = list(update_fields.values())
+    params.append(algorithm_name)  # Para el WHERE clause
+    
+    query = f"""
+        UPDATE pi_estimations 
+        SET {', '.join(set_parts)}
+        WHERE algorithm = ?
+    """
+    
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, tuple(params))
+            conn.commit()
+            
+            if cursor.rowcount > 0:
+                print(f"✅ Registro actualizado para algoritmo: {algorithm_name}")
+                return True
+            else:
+                print(f"⚠️ No se encontró el algoritmo: {algorithm_name}")
+                return False
+                
+    except sqlite3.Error as error:
+        print(f"❌ Error al actualizar registro: {error}")
+        return False
+    
+################################################
 
 def load_algorithms(PATH):
     with open(PATH, 'r') as f:
