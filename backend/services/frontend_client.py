@@ -3,6 +3,7 @@ import logging
 from utils.get_db import *
 from utils.get_algorithm_url import extract_all_algorithm
 from typing import Dict, Tuple, List, Any
+from flask import current_app
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,50 @@ class FrontEndClient:
         except Exception as e:
             logger.error(f"Error obteniendo top performers: {e}")
             return self._create_error_response("Error retrieving top performers", str(e)), 500
+    
+    def rerun_algorithm(self, request) -> Tuple[Dict[str, Any], int]:
+        """
+        Re-ejecuta un algoritmo específico en el servidor C y actualiza la base de datos
+        
+        Args:
+            request: Objeto request de Flask con los datos JSON
+            
+        Returns:
+            Tuple[Dict, int]: (response_data, status_code)
+        """
+        try:
+            data = request.get_json()
+            
+            if not data or 'algorithmName' not in data:
+                return {
+                    'error': 'algorithmName is required'
+                }, 400
+            
+            algorithm_name = data['algorithmName']
+            
+            # Llamar al servidor C para ejecutar el algoritmo
+            server_c_client = current_app.server_c_client
+            result_data, result_status = server_c_client.run_algorithm(algorithm_name)
+            
+            # Actualizar la base de datos con el nuevo resultado
+            if result_status == 200:
+                success = update_estimation_after_rerun(algorithm_name, result_data)
+                if success:
+                    logger.info(f"Base de datos actualizada para {algorithm_name}")
+                else:
+                    logger.warning(f"No se pudo actualizar la base de datos para {algorithm_name}")
+            
+            return {
+                'algorithmName': algorithm_name,
+                'result': result_data
+            }, result_status
+            
+        except Exception as e:
+            logger.exception("Error processing rerun request")
+            return {
+                'error': 'Error processing request',
+                'details': str(e)
+            }, 500
         
     def get_algorithms_info(self) -> Tuple[Dict[str, Any], int]:
         """

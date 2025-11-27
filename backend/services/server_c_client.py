@@ -57,7 +57,7 @@ class ServerCClient:
                 'error': str(e)
             }, 500
     
-    def calculate_pi(self, algorithm: str) -> Tuple[Dict, int]:
+    def run_algorithm(self, algorithm: str) -> Tuple[Dict, int]:
         """
         Solicita un cálculo de Pi al servidor C
         

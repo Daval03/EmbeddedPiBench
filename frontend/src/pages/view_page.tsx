@@ -25,8 +25,7 @@ const PiAlgorithmsTable: React.FC = () => {
       };
   
       loadEstimations();
-    }, []);
-  
+  }, []);
 
   const handleSort = (key: keyof Estimation) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -54,10 +53,54 @@ const PiAlgorithmsTable: React.FC = () => {
     }
     return sortable;
   }, [algorithms, sortConfig]);
-
-  const handleReRun = (algorithmName: string) => {
+  
+  const handleReRun = async (algorithmName: string) => {
     console.log(`Re-run requested for: ${algorithmName}`);
-    alert(`Re-running algorithm: ${algorithmName.replace(/_/g, ' ')}`);
+    
+    try {
+      const response = await fetch('http://192.168.18.3:5000/api/v1/estimations/rerun', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          algorithmName: algorithmName
+        })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log('✅ Server received re-run request:', result);
+        
+        // Actualizar solo el algoritmo modificado en el estado
+        setAlgorithms(prevAlgorithms => 
+          prevAlgorithms.map(algo => {
+            if (algo.algorithm === algorithmName) {
+              // Crear nuevo objeto con los datos actualizados
+              return {
+                ...algo,
+                pi_estimate: parseFloat(result.result.pi_estimate),
+                correct_digits: result.result.correct_digits,
+                iterations: result.result.iterations,
+                time_seconds: result.result.time_seconds,
+                iterations_per_second: result.result.iterations_per_second,
+                absolute_error: result.result.absolute_error,
+                id: algo.id,
+                type: algo.type
+              };
+            }
+            return algo;
+          })
+        );
+        console.log('🔄 Algoritmo actualizado en la tabla:', algorithmName);
+        
+      } else {
+        console.error('❌ Error from server:', result.error);
+      }
+    } catch (error) {
+      console.error('❌ Network error:', error);
+    }
   };
 
   const formatScientific = (num: number): string => {
