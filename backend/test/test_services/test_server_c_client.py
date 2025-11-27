@@ -108,9 +108,9 @@ class TestHealthCheck:
 
 
 class TestCalculatePi:
-    """Tests for calculate_pi method"""
+    """Tests for run_algorithm method"""
     
-    def test_calculate_pi_success(self):
+    def test_run_algorithm_success(self):
         """Test successful pi calculation"""
         # Arrange
         client = ServerCClient("http://localhost:8080")
@@ -125,77 +125,77 @@ class TestCalculatePi:
         
         with patch.object(client.session, 'get', return_value=mock_response):
             # Act
-            response, status_code = client.calculate_pi("monte_carlo")
+            response, status_code = client.run_algorithm("monte_carlo")
             
             # Assert
             assert status_code == 200
             assert response['pi_estimate'] == 3.14159
             assert response['algorithm'] == 'monte_carlo'
     
-    def test_calculate_pi_timeout(self):
+    def test_run_algorithm_timeout(self):
         """Test pi calculation timeout"""
         client = ServerCClient("http://localhost:8080")
         
         with patch.object(client.session, 'get', side_effect=requests.exceptions.Timeout):
-            response, status_code = client.calculate_pi("chudnovsky")
+            response, status_code = client.run_algorithm("chudnovsky_fast")
             
             assert status_code == 504
             assert 'timeout' in response['error'].lower()
-            assert response['algorithm'] == 'chudnovsky'
+            assert response['algorithm'] == 'chudnovsky_fast'
     
-    def test_calculate_pi_request_exception(self):
+    def test_run_algorithm_request_exception(self):
         """Test pi calculation with request exception"""
         client = ServerCClient("http://localhost:8080")
         
         with patch.object(client.session, 'get', side_effect=requests.exceptions.RequestException("Network error")):
-            response, status_code = client.calculate_pi("leibniz")
+            response, status_code = client.run_algorithm("leibniz")
             
             assert status_code == 500
             assert 'error' in response
             assert response['algorithm'] == 'leibniz'
             assert 'Network error' in response['error']
     
-    def test_calculate_pi_unexpected_error(self):
+    def test_run_algorithm_unexpected_error(self):
         """Test pi calculation with unexpected error"""
         client = ServerCClient("http://localhost:8080")
         
         with patch.object(client.session, 'get', side_effect=Exception("Unexpected")):
-            response, status_code = client.calculate_pi("buffon")
+            response, status_code = client.run_algorithm("buffon")
             
             assert status_code == 500
             assert 'error' in response
             assert response['algorithm'] == 'buffon'
     
-    def test_calculate_pi_uses_correct_endpoint(self):
-        """Test that calculate_pi uses correct endpoint URL"""
+    def test_run_algorithm_uses_correct_endpoint(self):
+        """Test that run_algorithm uses correct endpoint URL"""
         client = ServerCClient("http://localhost:8080")
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"pi_estimate": 3.14}
         
         with patch.object(client.session, 'get', return_value=mock_response) as mock_get:
-            client.calculate_pi("monte_carlo")
+            client.run_algorithm("monte_carlo")
             
             mock_get.assert_called_once()
             call_url = mock_get.call_args[0][0]
             assert call_url == "http://localhost:8080/api/pi/monte_carlo"
     
-    def test_calculate_pi_uses_default_timeout(self):
-        """Test that calculate_pi uses default timeout from init"""
+    def test_run_algorithm_uses_default_timeout(self):
+        """Test that run_algorithm uses default timeout from init"""
         client = ServerCClient("http://localhost:8080", default_timeout=60)
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"pi_estimate": 3.14}
         
         with patch.object(client.session, 'get', return_value=mock_response) as mock_get:
-            client.calculate_pi("leibniz")
+            client.run_algorithm("leibniz")
             
             assert mock_get.call_args[1]['timeout'] == 60
     
-    def test_calculate_pi_different_algorithms(self):
-        """Test calculate_pi with different algorithm names"""
+    def test_run_algorithm_different_algorithms(self):
+        """Test run_algorithm with different algorithm names"""
         client = ServerCClient("http://localhost:8080")
-        algorithms = ["monte_carlo", "leibniz", "chudnovsky", "buffon"]
+        algorithms = ["monte_carlo", "leibniz", "chudnovsky_fast", "buffon"]
         
         for algo in algorithms:
             mock_response = Mock()
@@ -203,7 +203,7 @@ class TestCalculatePi:
             mock_response.json.return_value = {"algorithm": algo}
             
             with patch.object(client.session, 'get', return_value=mock_response) as mock_get:
-                response, status_code = client.calculate_pi(algo)
+                response, status_code = client.run_algorithm(algo)
                 
                 assert status_code == 200
                 expected_url = f"http://localhost:8080/api/pi/{algo}"
@@ -257,7 +257,7 @@ class TestIntegrationScenarios:
             assert health_result['server_c_status'] == 'ok'
             
             # Then calculate
-            calc_result, calc_status = client.calculate_pi("monte_carlo")
+            calc_result, calc_status = client.run_algorithm("monte_carlo")
             assert calc_status == 200
             assert calc_result['pi_estimate'] == 3.14159
     
@@ -271,9 +271,9 @@ class TestIntegrationScenarios:
         
         with patch.object(client.session, 'get', return_value=mock_response) as mock_get:
             # Perform multiple calculations
-            client.calculate_pi("monte_carlo")
-            client.calculate_pi("leibniz")
-            client.calculate_pi("buffon")
+            client.run_algorithm("monte_carlo")
+            client.run_algorithm("leibniz")
+            client.run_algorithm("buffon")
             
             # Should use same session for all calls
             assert mock_get.call_count == 3
@@ -284,7 +284,7 @@ class TestIntegrationScenarios:
         
         # First call fails
         with patch.object(client.session, 'get', side_effect=requests.exceptions.Timeout):
-            response1, status1 = client.calculate_pi("monte_carlo")
+            response1, status1 = client.run_algorithm("monte_carlo")
             assert status1 == 504
         
         # Second call succeeds
@@ -293,5 +293,5 @@ class TestIntegrationScenarios:
         mock_response.json.return_value = {"pi_estimate": 3.14}
         
         with patch.object(client.session, 'get', return_value=mock_response):
-            response2, status2 = client.calculate_pi("monte_carlo")
+            response2, status2 = client.run_algorithm("monte_carlo")
             assert status2 == 200
